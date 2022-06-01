@@ -1,0 +1,95 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ namespacedModel }};
+use {{ rootNamespace }}Http\Controllers\Controller;
+use {{ namespacedRequests }}
+use {{ rootNamespace }}Helpers\ApiResponse;
+use {{ rootNamespace }}Repository\{{ model }}\{{ model }}Interface;
+use App\Http\Resources\{{ model }}\{{ model }}Resource;
+
+class {{ class }} extends Controller
+{
+    private {{ model }}Interface $repository;
+
+    public function __construct({{ model }}Interface $repository)
+    {
+        $this->repository = $repository;
+    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public function index()
+    {
+        return $this->repository->index();
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \{{ namespacedStoreRequest }}  $request
+     * @return {{ model }}Resource|\Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     */
+    public function store({{ storeRequest }} $request)
+    {
+        $validated = $request->validatedData();
+        if (!${{ modelVariable }} =$this->repository->store($validated)) {
+            return  ApiResponse::error(__('main.store_fail',['model'=>__('main.{{ modelVariable }}')]));
+        }
+        return new {{ model }}Resource(${{ modelVariable }});
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int $id
+     * @return {{ model }}Resource|\Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     */
+    public function show(int $id)
+    {
+        if (!${{ modelVariable }} = $this->repository->find($id)) {
+            return \App\Helpers\ApiResponse::notFound();
+        }
+        return new {{ model }}Resource(${{ modelVariable }});
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \{{ namespacedUpdateRequest }}  $request
+     * @param  int $id
+     * @return {{ model }}Resource|\Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     */
+    public function update({{ updateRequest }} $request, int $id)
+    {
+        if (!${{ modelVariable }} = $this->repository->find($id)) {
+            return \App\Helpers\ApiResponse::notFound();
+        }
+        $validated = $request->validatedData();
+        if (!${{ modelVariable }} =$this->repository->update(${{ modelVariable }},$validated)) {
+            return  ApiResponse::error(__('main.update_fail',['model'=>__('main.{{ modelVariable }}')]));
+        }
+        return new {{ model }}Resource(${{ modelVariable }});
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int $id
+     * @return {{ model }}Resource|\Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     */
+    public function destroy(int $id)
+    {
+        if (!${{ modelVariable }} = $this->repository->find($id)) {
+            return \App\Helpers\ApiResponse::notFound();
+        }
+
+        if (!$this->repository->delete(${{ modelVariable }})) {
+            return  ApiResponse::error(__('main.delete_fail',['model'=>__('main.{{ modelVariable }}')]));
+        }
+        return  ApiResponse::success(__('main.deleted_success',['model'=>__('main.{{ modelVariable }}')]));
+    }
+}

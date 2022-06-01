@@ -1,0 +1,26 @@
+<?php
+
+namespace {{ namespace }};
+use Illuminate\Database\Eloquent\Collection;
+use Yajra\DataTables\Services\DataTable;
+use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+
+/**
+ * @mixin {{ RepositoryClass }}
+ */
+interface {{ class }}
+{
+    public function index():\Illuminate\Pagination\LengthAwarePaginator;
+    public function all();
+    public function store(array $data): \{{ RepositoryModelClass }}|bool;
+    public function destroy(int|array|\{{ RepositoryModelClass }} $model): bool;
+    public function find(int|array|\{{ RepositoryModelClass }} $model, callable $callable = null, bool $deleted = false): \{{ RepositoryModelClass }}|Collection|null;
+    public function delete(int|\{{ RepositoryModelClass }} $model): \{{ RepositoryModelClass }}|bool;
+    public function forceDelete(int|\{{ RepositoryModelClass }} $model): \{{ RepositoryModelClass }}|bool;
+    public function restore(int|\{{ RepositoryModelClass }} $model): \{{ RepositoryModelClass }}|bool;
+    public function datatable(): \App\DataTables\{{name}}Datatable|DataTable;
+    public function toggleStatus(int|\{{ RepositoryModelClass }} $model, bool $status = false): bool;
+    public function update(int|\{{ RepositoryModelClass }} $model, array $data): \{{ RepositoryModelClass }}|bool;
+    public function deletedOnly(): array|\Illuminate\Pagination\LengthAwarePaginator;
+}

@@ -1,0 +1,203 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ namespacedModel }};
+use {{ rootNamespace }}Http\Controllers\Controller;
+use {{ namespacedRequests }}
+use {{ rootNamespace }}Repository\{{ model }}\{{ model }}Interface;
+
+class {{ class }} extends Controller
+{
+    private {{ model }}Interface $repository;
+
+    public function __construct({{ model }}Interface $repository)
+    {
+        $this->repository = $repository;
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return {{ model }}Resource|\Illuminate\Http\JsonResponse
+     */
+    public function datatable()
+    {
+        return $this->repository->datatable()->render('dashboard::{{ modelVariable }}.datatable');
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return {{ model }}Resource|\Illuminate\Http\JsonResponse
+     */
+    public function index()
+    {
+        //$data = $this->repository->index();
+        $dataTable = $this->repository->datatable()->html();
+        return view('dashboard::{{ modelVariable }}.index',compact('dataTable'));
+    }
+
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|{{ model }}Resource|\Illuminate\Http\JsonResponse
+     */
+    public function create()
+    {
+        $model = new {{ model }}();
+        return view('dashboard::{{ modelVariable }}.create', compact('model'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param \App\Http\Requests\Store{{ model }}Request $request
+     * @return \Illuminate\Http\RedirectResponse|{{ model }}Resource|\Illuminate\Http\JsonResponse
+     */
+    public function store(Store{{ model }}Request $request)
+    {
+        $validated = $request->validatedData();
+
+        if (!$this->repository->store($validated)) {
+            $this->alert('error', __('main.{{ modelVariable }}'), __('messages.not_save', ['model' => __('main.{{ modelVariable }}')]));
+            return back();
+        }
+
+        $this->alert('success', __('main.{{ modelVariable }}'), __('messages.saved', ['model' => __('main.{{ modelVariable }}')]));
+        return back();
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param int $id
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse|{{ model }}Resource|\Illuminate\Http\JsonResponse
+     */
+    public function show(int $id)
+    {
+        if (!$model = $this->repository->find($id)) {
+            $this->alert('error', __('main.{{ modelVariable }}'), __('messages.not_found', ['model' => __('main.{{ modelVariable }}')]));
+            return \App\Helpers\ApiResponse::notFound();
+        }
+        return view('dashboard::{{ modelVariable }}.show', compact('model'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param int $id
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+     */
+    public function edit(int $id)
+    {
+        if (!$model = $this->repository->find($id)) {
+            $this->alert('error', __('main.{{ modelVariable }}'), __('messages.not_found', ['model' => __('main.{{ modelVariable }}')]));
+            return \App\Helpers\ApiResponse::notFound();
+        }
+        return view('dashboard::{{ modelVariable }}.edit', compact('model'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param \App\Http\Requests\Update{{ model }}Request $request
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse|{{ model }}Resource|\Illuminate\Http\JsonResponse
+     */
+    public function update(Update{{ model }}Request $request, int $id)
+    {
+        if (!$model = $this->repository->find($id)) {
+            $this->alert('error', __('main.{{ modelVariable }}'), __('messages.not_found', ['model' => __('main.{{ modelVariable }}')]));
+            return \App\Helpers\ApiResponse::notFound();
+        }
+
+        $validated = $request->validatedData();
+
+        if (!$this->repository->update($model, $validated)) {
+            $this->alert('error', __('main.{{ modelVariable }}'), __('messages.not_update', ['model' => __('main.{{ modelVariable }}')]));
+            return back();
+        }
+
+        $this->alert('success', __('main.{{ modelVariable }}'), __('messages.updated', ['model' => __('main.{{ modelVariable }}')]));
+        return back();
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse|{{ model }}Resource|\Illuminate\Http\JsonResponse
+     */
+    public function destroy(int $id)
+    {
+        if (!$model = $this->repository->find($id)) {
+            $this->alert('error', __('main.{{ modelVariable }}'), __('messages.not_found', ['model' => __('main.{{ modelVariable }}')]));
+            return \App\Helpers\ApiResponse::notFound();
+        }
+
+        if (!$this->repository->delete($model)) {
+            $this->alert('error', __('main.{{ modelVariable }}'), __('messages.not_delete', ['model' => __('main.{{ modelVariable }}')]));
+            return back();
+        }
+        $this->alert('success', __('main.{{ modelVariable }}'), __('messages.deleted', ['model' => __('main.{{ modelVariable }}')]));
+        return back();
+    }
+
+    public function forceDelete(int $id)
+    {
+        if (!$model = $this->repository->find($id)) {
+            $this->alert('error', __('main.{{ modelVariable }}'), __('messages.not_found', ['model' => __('main.{{ modelVariable }}')]));
+            return \App\Helpers\ApiResponse::notFound();
+        }
+
+        if (!$this->repository->forceDelete($model)) {
+            $this->alert('error', __('main.{{ modelVariable }}'), __('messages.not_delete', ['model' => __('main.{{ modelVariable }}')]));
+
+            return back();
+        }
+        $this->alert('success', __('main.{{ modelVariable }}'), __('messages.deleted', ['model' => __('main.{{ modelVariable }}')]));
+
+        return back();
+    }
+
+    public function restore(int $id)
+    {
+        if (!$model = $this->repository->find($id, deleted: true)) {
+            $this->alert('error', __('main.{{ modelVariable }}'), __('messages.not_found', ['model' => __('main.{{ modelVariable }}')]));
+            return back();
+        }
+
+        if (!$this->repository->restore($model)) {
+            $this->alert('error', __('main.{{ modelVariable }}'), __('messages.not_delete', ['model' => __('main.{{ modelVariable }}')]));
+            return back();
+        }
+
+        $this->alert('success', __('main.{{ modelVariable }}'), __('messages.deleted', ['model' => __('main.{{ modelVariable }}')]));
+
+        return back();
+    }
+    public function status(\Illuminate\Http\Request $request, int $id)
+    {
+        if (!$model = $this->repository->find($id)) {
+            $this->alert('error', __('main.{{ modelVariable }}'), __('messages.not_found', ['model' => __('main.{{ modelVariable }}')]));
+            return \App\Helpers\ApiResponse::notFound();
+        }
+
+        $request->validate([
+            'status' => ['required', 'boolean'],
+        ]);
+
+        if (!$this->repository->toggleStatus($model, $request->boolean('status'))) {
+            $this->alert('error', __('main.{{ modelVariable }}'), __('messages.status_not_update', ['model' => __('main.{{ modelVariable }}')]));
+
+            return back();
+        }
+
+        $this->alert('success', __('main.{{ modelVariable }}'), __('messages.status_updated', ['model' => __('main.{{ modelVariable }}'), 'status' => $model->status]));
+
+        return back();
+    }
+
+}

@@ -1,0 +1,166 @@
+<?php
+
+namespace {{ namespace }};
+use App\Repository\BaseRepository;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Yajra\DataTables\Services\DataTable;
+use Maatwebsite\Excel\Excel;
+use Illuminate\Pagination\LengthAwarePaginator;
+
+/**
+ * @property-read \{{ RepositoryModelClass }} $model
+ */
+class {{ class }} extends BaseRepository implements {{ RepositoryInterface }}
+{
+     protected array $filters = [];
+
+    /**
+     * @param \{{ RepositoryModelClass }} $model
+     */
+    public function __construct(\{{ RepositoryModelClass }} $model)
+    {
+        parent::__construct($model);
+    }
+    /**
+     * @return LengthAwarePaginator
+     */
+    public function index():LengthAwarePaginator
+    {
+        return $this->applyFilter($this->model->query())->paginate();
+    }
+
+    /**
+     * @return \{{ RepositoryModelClass }}[]|Collection
+     */
+    public function all()
+    {
+        return $this->applyFilter($this->model->query())->get();
+    }
+
+    /**
+     * @param array $data
+     * @return \{{ RepositoryModelClass }}|bool
+     */
+    public function store(array $data): \{{ RepositoryModelClass }}|bool
+    {
+        // changes something
+
+        if (!$saved = $this->model->create($data)) {
+            return false;
+        }
+        // sync
+
+        return $saved;
+    }
+
+    /**
+     * @param int|int[]|\{{ RepositoryModelClass }} $model
+     * @return bool
+     */
+    public function destroy(int|array|\{{ RepositoryModelClass }} $model): bool
+    {
+        if (!$model = $this->find($model)) return false;
+
+        return $model instanceof Collection ? $model->toQuery()->delete() : $model->delete();
+    }
+
+    /**
+     * @param int|\{{ RepositoryModelClass }} $model
+     * @param callable|null $callable
+     * @param bool $deleted
+     * @return \{{ RepositoryModelClass }}|Collection|null
+     */
+    public function find(int|array|\{{ RepositoryModelClass }} $model, callable $callable = null, bool $deleted = false): \{{ RepositoryModelClass }}|Collection|null
+    {
+        if ($model instanceof \{{ RepositoryModelClass }}) return $model;
+
+        $query = $this->model->query();
+
+        if ($deleted) $query->withTrashed();
+
+        if (is_callable($callable)) $callable($query);
+
+        if (is_array($model)) return  $query->findMany($model);
+
+        return $query->find($model);
+    }
+
+    /**
+     * @param int|\{{ RepositoryModelClass }} $model
+     * @return \{{ RepositoryModelClass }}|bool
+     */
+    public function delete(int|\{{ RepositoryModelClass }} $model): \{{ RepositoryModelClass }}|bool
+    {
+        if (!$model = $this->find($model)) return false;
+
+        return $model->delete();
+    }
+
+    /**
+     * @param int|\{{ RepositoryModelClass }} $model
+     * @return \{{ RepositoryModelClass }}|bool
+     */
+    public function forceDelete(int|\{{ RepositoryModelClass }} $model): \{{ RepositoryModelClass }}|bool
+    {
+        if (!$model = $this->find($model)) return false;
+
+        return $model->forceDelete();
+    }
+
+    /**
+     * @param int|\{{ RepositoryModelClass }} $model
+     * @return \{{ RepositoryModelClass }}|bool
+     */
+    public function restore(int|\{{ RepositoryModelClass }} $model): \{{ RepositoryModelClass }}|bool
+    {
+        if (!$model = $this->find($model, deleted: true)) return false;
+
+        return $model->restore();
+    }
+
+    /**
+     * @return \App\DataTables\{{name}}Datatable|DataTable
+     */
+    public function datatable(): \App\DataTables\{{name}}Datatable|DataTable
+    {
+        return app(\App\DataTables\{{name}}Datatable::class);
+    }
+
+    /**
+     * @param int|\{{ RepositoryModelClass }} $model
+     * @param bool $status
+     * @return bool
+     */
+    public function toggleStatus(int|\{{ RepositoryModelClass }} $model, bool $status = false): bool
+    {
+        $model = $this->find($model);
+
+        return $model->update(compact('status'));
+    }
+
+    /**
+     * @param int|\{{ RepositoryModelClass }} $model
+     * @param array $data
+     * @return \{{ RepositoryModelClass }}|bool
+     */
+    public function update(int|\{{ RepositoryModelClass }} $model, array $data): \{{ RepositoryModelClass }}|bool
+    {
+        if (!$model = $this->find($model)) return false;
+        // changes something
+
+        if (!$model->update($data)) return false;
+        // sync
+
+        return $model;
+    }
+
+    /**
+     * @return array|\Illuminate\Pagination\LengthAwarePaginator
+     */
+    public function deletedOnly(): array|\Illuminate\Pagination\LengthAwarePaginator
+    {
+        return $this->model->onlyTrashed()->paginate();
+    }
+}
