@@ -3,9 +3,8 @@
 namespace App\Models;
 
 use App\Casts\HashCast;
-use App\Casts\ImageCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Worker extends BaseAuth
@@ -47,13 +46,10 @@ class Worker extends BaseAuth
 
 
     /**
-     * @return BelongsToMany
+     * @return HasMany
      */
-    public function orders(): BelongsToMany
+    public function orders(): HasMany
     {
-        return $this->belongsToMany(User::class, 'worker_users')
-            ->withTimestamps()
-            ->withPivot(['after_images','before_images', 'plan_id'])
-            ->withCasts(['after_images' => ImageCast::class,'before_images' => ImageCast::class,]);
+        return $this->hasMany(WorkerUser::class);
     }
 }

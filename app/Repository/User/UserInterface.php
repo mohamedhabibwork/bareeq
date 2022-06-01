@@ -43,4 +43,6 @@ interface UserInterface
 
     public function attachCar(User $user,array $data);
 
+    public function rateOrder(WorkerUser $order, int $rate);
+
 }

@@ -16,9 +16,7 @@ use App\Models\WorkerUser;
 use App\Repository\User\UserInterface;
 use App\Repository\WorkerUser\WorkerUserInterface;
 use DB;
-use Illuminate\Auth\Events\Attempting;
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -41,8 +39,9 @@ class UserController extends Controller
             'password' => ['required', 'string']
         ]);
 
-        if (!$user = $this->repository->login($request->get('phone'), $request->get('password')))
+        if ((!$user = $this->repository->login($request->get('phone'), $request->get('password'))) && !$user['token'])
             return ApiResponse::error(__('auth.failed'));
+
         $token = $user['token']->plainTextToken;
         return (new UserResource($user['user']))->additional(compact('token'));
     }
@@ -103,9 +102,9 @@ class UserController extends Controller
     public function storeOrder(Request $request)
     {
         $user = $request->user();
-        if (!$plan = $user->selectPlan()) {
+        if (!$plan = $user->selectPlan())
             return ApiResponse::error(__('your plan limited'));
-        }
+
         if (!$order = $this->repository->createOrder($user, $plan)) {
             return ApiResponse::error(__('main.your order failed'));
         }
@@ -135,14 +134,38 @@ class UserController extends Controller
         return new SingleRequestResource($single);
     }
 
-    public function statusOrder(Request $request, int $id)
+    public function rateOrder(Request $request, int $id)
     {
         $orderInterface = app(WorkerUserInterface::class);
+
         if (!$order = $orderInterface->find($id)) {
             return ApiResponse::notFound();
         }
 
-        if (!$order->user_status != WorkerUser::USER_STATUS['pending'] || $order->user_id != $request->user()->id) {
+        if ($order->user_status != WorkerUser::USER_STATUS['success'] || $order->order_status != WorkerUser::ORDER_STATUS['success'] || $order->user_id != $request->user()->id || $order->rate != null) {
+            return ApiResponse::error(__('main.order not available for you'), code: 403);
+        }
+
+        $validated = $request->validate([
+            'rate' => ['required', 'integer', 'between:1,6'],
+        ]);
+
+        if (!$this->repository->rateOrder($order, (int)$validated['rate'])) {
+            return ApiResponse::error(__('main.update_fail'));
+        }
+
+        return ApiResponse::success(__('main.rated'));
+    }
+
+    public function statusOrder(Request $request, int $id)
+    {
+        $orderInterface = app(WorkerUserInterface::class);
+
+        if (!$order = $orderInterface->find($id)) {
+            return ApiResponse::notFound();
+        }
+
+        if ($order->user_status != WorkerUser::USER_STATUS['pending'] || $order->user_id != $request->user()->id) {
             return ApiResponse::error(__('main.order not available for you'), code: 403);
         }
 

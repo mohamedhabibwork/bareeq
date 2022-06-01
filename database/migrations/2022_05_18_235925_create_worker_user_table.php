@@ -16,13 +16,14 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('worker_users', function (Blueprint $table) {
+        Schema::create('worker_user', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class, 'user_id')->constrained()->cascadeOnUpdate();
             $table->foreignIdFor(WorkerAlias::class, 'worker_id')->nullable()->constrained()->cascadeOnUpdate()->nullOnDelete();
             $table->foreignIdFor(Plan::class, 'plan_id')->nullable()->constrained()->cascadeOnUpdate()->nullOnDelete();
             $table->jsonb('after_images')->nullable();
             $table->jsonb('before_images')->nullable();
+            $table->tinyInteger('rate')->nullable();
             $table->tinyInteger('order_status')->unsigned()->default(WorkerUser::ORDER_STATUS['pending']);
             $table->tinyInteger('user_status')->unsigned()->default(WorkerUser::USER_STATUS['pending']);
             $table->timestamps();
@@ -36,6 +37,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('worker_users');
+        Schema::dropIfExists('worker_user');
     }
 };

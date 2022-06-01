@@ -83,8 +83,8 @@ class WorkerUserController extends Controller
     public function startOrder(int $id, Request $request)
     {
         $validated = $request->validate([
-            'after_images' => ['required', 'array', 'min:1'],
-            'after_images.*' => ['sometimes', 'required', 'image'],
+            'before_images' => ['required', 'array', 'min:1'],
+            'before_images.*' => ['required', 'image'],
         ]);
 
         if (!$order = $this->repository->find($id))

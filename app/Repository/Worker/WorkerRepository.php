@@ -187,7 +187,7 @@ class WorkerRepository extends BaseRepository implements WorkerInterface
      */
     public function finishOrder(Worker $worker, WorkerUser $order, array $before_images)
     {
-        $status = WorkerUser::STATUS['success'];
+        $status = WorkerUser::ORDER_STATUS['success'];
         return $order->update(compact('before_images', 'status'));
     }
 

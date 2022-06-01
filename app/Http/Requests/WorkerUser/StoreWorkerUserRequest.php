@@ -10,8 +10,8 @@ class StoreWorkerUserRequest extends FormRequest
 {
     use RequestMethods;
 
-    protected array $filesKeys = ['after_images','before_images'];
-    protected array $forgetIfNull = [];
+    protected array $filesKeys = ['after_images','before_images',];
+    protected array $forgetIfNull = ['after_images','before_images',];
     protected array $encryption = [];
 
     /**

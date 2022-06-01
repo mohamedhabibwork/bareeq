@@ -22,13 +22,13 @@ class WorkerOrderChart
             'orders_count' => WorkerUser::selectRaw('count(*)')
                 ->where('user_status',  WorkerUser::USER_STATUS['success'])
                 ->whereNotIn('order_status', [WorkerUser::USER_STATUS['success']])
-                ->whereColumn('workers.id', 'worker_users.worker_id')
+                ->whereColumn('workers.id', 'worker_user.worker_id')
                 ->whereDate('created_at', today())
                 ->limit(1),
             'orders_success_count' => WorkerUser::selectRaw('count(*)')
                 ->where('user_status',WorkerUser::USER_STATUS['success'])
                 ->where('order_status',WorkerUser::ORDER_STATUS['success'])
-                ->whereColumn('workers.id', 'worker_users.worker_id')
+                ->whereColumn('workers.id', 'worker_user.worker_id')
                 ->whereDate('created_at', today())
                 ->limit(1),
         ])->get();

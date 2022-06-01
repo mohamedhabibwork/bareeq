@@ -63,4 +63,7 @@ return array(
     'orders_count' => 'Orders Count',
     'orders_success_count' => 'Orders Success Count',
     'worker_vs_orders' => 'Worker vs Orders',
+    'sign_in_to_start_your_session' => 'Sign in to start your session',
+    'remember_me' => 'Remember Me',
+    'sign_in' => 'Sign In',
 );

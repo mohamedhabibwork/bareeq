@@ -22,7 +22,7 @@ class UpdateUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'phone' => ['sometimes', 'required', 'unique:users,phone,' . $this->route('id')],
+            'phone' => ['sometimes', 'required', 'unique:users,phone,' . $this->route('id'), 'min:10', 'max:13', 'starts_with:01'],
             'name' => ['sometimes', 'required', 'string', 'min:3'],
             'password' => ['sometimes', 'required', 'min:6', 'confirmed'],
             'start_time' => ['sometimes', 'required', 'date_format:h:i'],

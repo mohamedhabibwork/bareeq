@@ -15,13 +15,15 @@ class WorkerUser extends BaseModel
         'success' => 1,
         'progress' => 2,
     ];
-
     public const USER_STATUS = [
         'pending' => 0,
         'success' => 1,
         'progress' => 2,
         'changed' => 3,
     ];
+    public $incrementing = true;
+
+    protected $table = 'worker_user';
 
     protected $fillable = ['worker_id', 'user_id', 'plan_id', 'after_images', 'before_images', 'order_status', 'user_status'];
 

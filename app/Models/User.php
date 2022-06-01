@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Casts\HashCast;
-use App\Casts\ImageCast;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -72,22 +71,19 @@ class User extends BaseAuth
     }
 
     /**
-     * @return BelongsToMany
+     * @return HasMany
      */
-    public function order_in_plan(): BelongsToMany
+    public function order_in_plan(): HasMany
     {
-        return $this->orders()->wherePivotNotNull('plan_id');
+        return $this->orders()->whereNotNull('plan_id')->where('worker_user.user_status', WorkerUser::USER_STATUS['success']);
     }
 
     /**
-     * @return BelongsToMany
+     * @return HasMany
      */
-    public function orders(): BelongsToMany
+    public function orders(): HasMany
     {
-        return $this->belongsToMany(Worker::class, 'worker_users')
-            ->withTimestamps()
-            ->withPivot(['after_images','before_images', 'plan_id'])
-            ->withCasts(['after_images' => ImageCast::class,'before_images' => ImageCast::class,]);
+        return $this->hasMany(WorkerUser::class);
     }
 
     /**
@@ -111,7 +107,7 @@ class User extends BaseAuth
     public function availableOrderInPlan(Plan $plan): bool
     {
         $this->loadCount(['orders' => fn($q) => $q->where('plan_id', $plan->id)]);
-        return $this->orders_count < $plan->withCount;
+        return $this->orders_count < $plan->wishing_count;
     }
 
 }

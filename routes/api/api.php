@@ -19,6 +19,7 @@ Route::group(['prefix' => 'users'], function () {
         Route::post('user/update', [UserController::class, 'update']);
         Route::get('orders', [UserController::class, 'orders']);
         Route::post('orders', [UserController::class, 'storeOrder']);
+        Route::post('rate/orders/{id}', [UserController::class, 'rateOrder']);
         Route::post('orders/{id}/update/status', [UserController::class, 'statusOrder']);
         Route::get('requests', [UserController::class, 'singles']);
         Route::post('requests', [UserController::class, 'createSingleRequest']);

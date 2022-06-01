@@ -3,6 +3,7 @@
 namespace App\Repository\User;
 
 use App\DataTables\Dashboard\UserDatatable;
+use App\Models\Car;
 use App\Models\Plan;
 use App\Models\SingleRequest;
 use App\Models\User;
@@ -12,8 +13,7 @@ use App\Repository\BaseRepository;
 use App\Repository\Traits\AuthTrait;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\Request;
-use LaravelIdea\Helper\App\Models\_IH_SingleRequest_C;
+use Illuminate\Database\Eloquent\Model;
 use Yajra\DataTables\Services\DataTable;
 
 /**
@@ -45,7 +45,7 @@ class UserRepository extends BaseRepository implements UserInterface
             ->withSum('plans', 'wishing_count')
             ->withCount('orders')
             ->whereDoesntHave('orders', function ($q) {
-                $q->whereDate('worker_users.created_at', today());
+                $q->whereDate('worker_user.created_at', today());
             })
             ->having('plans_sum_wishing_count', '>', 'orders_count');
 
@@ -201,16 +201,16 @@ class UserRepository extends BaseRepository implements UserInterface
      */
     public function notifications(User $user)
     {
-        return $user->orders()->where('user_status', WorkerUser::USER_STATUS['pending'])->paginate();
+        return $user->orders()->where('user_status', WorkerUser::USER_STATUS['pending'])->simplePaginate();
     }
 
     /**
      * @param User $user
-     * @return Worker[]|LengthAwarePaginator|\Illuminate\Pagination\LengthAwarePaginator
+     * @return \Illuminate\Contracts\Pagination\Paginator|\Illuminate\Pagination\Paginator|\LaravelIdea\Helper\App\Models\_IH_WorkerUser_C|Worker[]
      */
     public function orders(User $user)
     {
-        return $user->orders()->paginate();
+        return $user->orders()->with(['worker','plan'])->simplePaginate();
     }
 
     /**
@@ -230,7 +230,7 @@ class UserRepository extends BaseRepository implements UserInterface
      */
     public function singles(User $user)
     {
-        return $user->single_requests()->paginate();
+        return $user->single_requests()->simplePaginate();
     }
 
     /**
@@ -246,11 +246,21 @@ class UserRepository extends BaseRepository implements UserInterface
     /**
      * @param User $user
      * @param array $data
-     * @return \App\Models\Car|\Illuminate\Database\Eloquent\Model
+     * @return Car|Model
      */
     public function attachCar(User $user, array $data)
     {
         return $user->car()->firstOrCreate([], $data);
+    }
+
+    /**
+     * @param WorkerUser $order
+     * @param int $rate
+     * @return bool
+     */
+    public function rateOrder(WorkerUser $order, int $rate)
+    {
+        return $order->forceFill(compact('rate'))->save();
     }
 
 

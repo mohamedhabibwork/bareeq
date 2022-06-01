@@ -1,4 +1,4 @@
-<?php 
+<?php
 return [
   'dashboard' => 'لوحة القيادة',
   'plans' => 'الخطط',
@@ -38,7 +38,7 @@ return [
   'deleted_success' => 'تم حذف  :model النجاح',
   'description' => 'وصف',
   'edit' => 'تعديل',
-  'email' => 'تعديل',
+  'email' => 'بريد الكتروني',
   'image' => 'صورة',
   'images' => 'الصور',
   'order not finish' => 'الطلب لا ينتهي',

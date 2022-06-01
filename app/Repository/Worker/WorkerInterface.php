@@ -4,6 +4,7 @@ namespace App\Repository\Worker;
 
 use App\DataTables\Dashboard\WorkerDatatable;
 use App\Models\Worker;
+use App\Models\WorkerUser;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Yajra\DataTables\Services\DataTable;
@@ -39,5 +40,5 @@ interface WorkerInterface
 
     public function orders(Worker $worker);
 
-    public function finishOrder(Worker $worker, \App\Models\WorkerUser $order, array $before_images);
+    public function finishOrder(Worker $worker, WorkerUser $order, array $before_images);
 }
