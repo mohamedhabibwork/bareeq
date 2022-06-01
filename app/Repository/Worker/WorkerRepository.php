@@ -10,6 +10,8 @@ use App\Repository\BaseRepository;
 use App\Repository\Traits\AuthTrait;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
+use LaravelIdea\Helper\App\Models\_IH_WorkerUser_C;
 use Yajra\DataTables\Services\DataTable;
 
 /**
@@ -73,7 +75,7 @@ class WorkerRepository extends BaseRepository implements WorkerInterface
     }
 
     /**
-     * @param int|Worker $model
+     * @param int|array|Worker $model
      * @param callable|null $callable
      * @param bool $deleted
      * @return Worker|Collection|null
@@ -172,11 +174,11 @@ class WorkerRepository extends BaseRepository implements WorkerInterface
 
     /**
      * @param Worker $worker
-     * @return User[]|\Illuminate\Contracts\Pagination\LengthAwarePaginator|LengthAwarePaginator
+     * @return Paginator
      */
     public function orders(Worker $worker)
     {
-        return $worker->orders()->paginate();
+        return $worker->orders()->where('created_at', today())->simplePaginate();
     }
 
     /**

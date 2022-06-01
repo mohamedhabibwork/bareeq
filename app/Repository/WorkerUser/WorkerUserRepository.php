@@ -164,4 +164,13 @@ class WorkerUserRepository extends BaseRepository implements WorkerUserInterface
     {
         return $this->model->onlyTrashed()->paginate();
     }
+
+    /**
+     * @param string|null $date
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public function getDayOrders(?string $date = null)
+    {
+        return $this->applyFilter($this->model->whereNull('worker_id')->whereDate('created_at', $date ?? today())->with('user'))->paginate();
+    }
 }

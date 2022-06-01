@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignIdFor(Plan::class, 'plan_id')->constrained()->cascadeOnUpdate();
             $table->foreignIdFor(User::class, 'user_id')->constrained()->cascadeOnUpdate();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

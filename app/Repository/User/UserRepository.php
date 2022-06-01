@@ -53,7 +53,7 @@ class UserRepository extends BaseRepository implements UserInterface
     }
 
     /**
-     * @return Collection|User[]
+     * @return \Illuminate\Database\Eloquent\Builder[]|Collection
      */
     public function all()
     {

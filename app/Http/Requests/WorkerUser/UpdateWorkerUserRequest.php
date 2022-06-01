@@ -22,13 +22,13 @@ class UpdateWorkerUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'user_id' => ['required', 'integer', 'exists:users,id'],
+//            'user_id' => ['required', 'integer', 'exists:users,id'],
             'worker_id' => ['required', 'integer', 'exists:workers,id'],
-            'plan_id' => ['sometimes', 'required', 'integer', Rule::exists('user_plans', 'plan_id')->where('user_id', $this->get('user_id'))],
-            'after_images' => ['sometimes', 'required', 'array'],
-            'after_images.*' => ['sometimes', 'required', 'image'],
-            'before_images' => ['sometimes', 'required', 'array'],
-            'before_images.*' => ['sometimes', 'required', 'image'],
+//            'plan_id' => ['sometimes', 'required', 'integer', Rule::exists('user_plans', 'plan_id')->where('user_id', $this->get('user_id'))],
+//            'after_images' => ['sometimes', 'required', 'array'],
+//            'after_images.*' => ['sometimes', 'required', 'image'],
+//            'before_images' => ['sometimes', 'required', 'array'],
+//            'before_images.*' => ['sometimes', 'required', 'image'],
         ];
     }
 

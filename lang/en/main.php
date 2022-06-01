@@ -66,4 +66,5 @@ return array(
     'sign_in_to_start_your_session' => 'Sign in to start your session',
     'remember_me' => 'Remember Me',
     'sign_in' => 'Sign In',
+    'order_today' => 'Order\'s Today',
 );

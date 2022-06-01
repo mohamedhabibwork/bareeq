@@ -27,9 +27,38 @@
                     </tbody>
                 </table>
             </x-dashboard.card>
+
+            <x-dashboard.card class="mt-5 col-md-12">
+                <x-slot name="header">
+                    {{ __('main.order_today') }}
+                </x-slot>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>@lang('main.name')</th>
+                        <th>@lang('main.phone')</th>
+                        <th>@lang('main.assign_worker')</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($orders as $order)
+                        <tr>
+                            <td scope="row">{{ $order->id }}</td>
+                            <td> {{ $order->user->name }}</td>
+                            <td>{{ $order->user->phone }}</td>
+                            <td><a href="{{ route('dashboard.worker_users.edit',$order) }}"
+                                   class="btn btn-sm btn-success">{{ __('main.assign') }}</a></td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </x-dashboard.card>
+
             <x-dashboard.card class="mt-5 col-md-12">
                 {!! $chart->container() !!}
             </x-dashboard.card>
+
         </div>
     </div>
     <x-slot name="js">

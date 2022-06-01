@@ -36,4 +36,6 @@ interface WorkerUserInterface
     public function update(int|WorkerUser $model, array $data): WorkerUser|bool;
 
     public function deletedOnly(): array|LengthAwarePaginator;
+
+    public function getDayOrders(?string $date = null);
 }

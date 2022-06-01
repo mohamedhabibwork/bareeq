@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Charts\WorkerOrderChart;
-use App\Models\User;
 use App\Repository\User\UserInterface;
+use App\Repository\WorkerUser\WorkerUserRepository;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 
@@ -28,10 +28,12 @@ class HomeController extends Controller
      *
      * @return Renderable
      */
-    public function index(Request $request,WorkerOrderChart $chart)
+    public function index(Request $request, WorkerOrderChart $chart)
     {
-        $users = $this->repository->getDayUsers($request->get('wish_day',date('l')));
+        $wish_day = $request->get('wish_day', date('l'));
+        $users = $this->repository->getDayUsers($wish_day);
+        $orders = app(WorkerUserRepository::class)->getDayOrders($request->get('date', today()));
         $chart = $chart->build();
-        return view('home', compact('users','chart'));
+        return view('home', compact('users', 'orders', 'chart'));
     }
 }
