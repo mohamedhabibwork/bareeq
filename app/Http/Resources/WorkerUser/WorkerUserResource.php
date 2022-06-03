@@ -3,8 +3,10 @@
 namespace App\Http\Resources\WorkerUser;
 
 use App\Http\Resources\Plan\PlanResource;
+use App\Http\Resources\SingleRequest\SingleRequestResource;
 use App\Http\Resources\User\UserResource;
 use App\Http\Resources\Worker\WorkerResource;
+use App\Models\Plan;
 use App\Models\WorkerUser;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -30,10 +32,13 @@ class WorkerUserResource extends JsonResource
             'user_id' => $this->user_id,
             'worker_id' => $this->worker_id,
             'plan_id' => $this->plan_id,
+            'plan_type' => $this->plan_type,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'user' => new UserResource($this->whenLoaded('user')),
-            'plan' => new PlanResource($this->whenLoaded('plan')),
+            'plan' => $this->whenLoaded('plan', function () {
+                return $this->plan instanceof Plan ? new PlanResource($this->plan) : new SingleRequestResource($this->plan);
+            }),
             'worker' => new WorkerResource($this->whenLoaded('worker')),
         ];
     }

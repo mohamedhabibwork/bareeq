@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Casts\ImageCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class WorkerUser extends BaseModel
 {
@@ -15,17 +16,18 @@ class WorkerUser extends BaseModel
         'success' => 1,
         'progress' => 2,
     ];
+
     public const USER_STATUS = [
         'pending' => 0,
         'success' => 1,
-        'progress' => 2,
-        'changed' => 3,
+        'changed' => 2,
     ];
+
     public $incrementing = true;
 
     protected $table = 'worker_user';
 
-    protected $fillable = ['worker_id', 'user_id', 'plan_id', 'after_images', 'before_images', 'order_status', 'user_status'];
+    protected $fillable = ['worker_id', 'user_id', 'plan_id','plan_type', 'after_images', 'before_images', 'order_status', 'user_status'];
 
     protected $casts = [
         'after_images' => ImageCast::class,
@@ -54,10 +56,10 @@ class WorkerUser extends BaseModel
     }
 
     /**
-     * @return BelongsTo
+     * @return MorphTo
      */
-    public function plan(): BelongsTo
+    public function plan(): MorphTo
     {
-        return $this->belongsTo(Plan::class, 'plan_id');
+        return $this->morphTo();
     }
 }

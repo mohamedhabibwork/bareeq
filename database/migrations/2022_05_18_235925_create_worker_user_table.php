@@ -20,7 +20,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignIdFor(User::class, 'user_id')->constrained()->cascadeOnUpdate();
             $table->foreignIdFor(WorkerAlias::class, 'worker_id')->nullable()->constrained()->cascadeOnUpdate()->nullOnDelete();
-            $table->foreignIdFor(Plan::class, 'plan_id')->nullable()->constrained()->cascadeOnUpdate()->nullOnDelete();
+            $table->morphs('plan');
             $table->jsonb('after_images')->nullable();
             $table->jsonb('before_images')->nullable();
             $table->tinyInteger('rate')->nullable()->index();

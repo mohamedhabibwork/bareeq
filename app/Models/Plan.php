@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Casts\ImageCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Plan extends BaseModel
 {
@@ -42,8 +42,12 @@ class Plan extends BaseModel
         return $this->belongsToMany(User::class, 'user_plans')->withTimestamps();
     }
 
-    public function orders(): HasMany
+    /**
+     * @return MorphMany
+     */
+    public function orders(): MorphMany
     {
-        return $this->hasMany(WorkerUser::class, 'plan_id');
+        return $this->morphMany(WorkerUser::class, 'plan');
     }
+
 }

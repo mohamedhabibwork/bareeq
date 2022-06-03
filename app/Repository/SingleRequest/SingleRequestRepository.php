@@ -3,7 +3,11 @@
 namespace App\Repository\SingleRequest;
 
 use App\DataTables\Dashboard\SingleRequestDatatable;
+use App\Events\Orders\OrderCreatedEvent;
 use App\Models\SingleRequest;
+use App\Models\User;
+use App\Models\Worker;
+use App\Models\WorkerUser;
 use App\Repository\BaseRepository;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -163,5 +167,22 @@ class SingleRequestRepository extends BaseRepository implements SingleRequestInt
     public function deletedOnly(): array|LengthAwarePaginator
     {
         return $this->model->onlyTrashed()->paginate();
+    }
+
+    /**
+     * @param SingleRequest $model
+     * @param Worker $worker
+     * @return WorkerUser
+     */
+    public function createOrder(SingleRequest $model,Worker $worker): WorkerUser
+    {
+        return tap($model->orders()->create(['user_id' => $model->user->id,'worker_id'=>$worker->id, 'order_status' => WorkerUser::ORDER_STATUS['pending'], 'user_status' => WorkerUser::USER_STATUS['pending']]),function (WorkerUser $workerUser) {
+            event(new OrderCreatedEvent($workerUser));
+        });
+    }
+
+    public function getDayOrders()
+    {
+        return $this->model->whereDoesntHave('orders')->paginate(pageName: 'requests')->withQueryString();
     }
 }

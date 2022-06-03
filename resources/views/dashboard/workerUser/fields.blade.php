@@ -1,6 +1,9 @@
 {{--@if (request()->has('user_id'))--}}
     {{ Form::hidden('user_id',null, array_merge(['class' => 'form-control  '.($errors->has('user_id') ? 'is-invalid' : '')],[])) }}
     {{ Form::hidden('plan_id',null, array_merge(['class' => 'form-control  '.($errors->has('plan_id') ? 'is-invalid' : '')],[])) }}
+@if (request()->has('redirect'))
+    {{ Form::hidden('redirect',request('redirect'))}}
+@endif
 {{--@else--}}
     <div class="form-group">
         {{ Form::label(__('main.user_id'), null, ['class' => 'control-label']) }}

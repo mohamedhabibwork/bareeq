@@ -82,8 +82,10 @@ class WorkerUserController extends Controller
             $this->alert('error', __('main.workerUser'), __('messages.not_save', ['model' => __('main.workerUser')]));
             return back();
         }
-
         $this->alert('success', __('main.workerUser'), __('messages.saved', ['model' => __('main.workerUser')]));
+        if ($request->has('redirect')) {
+            return  redirect()->to($request->get('redirect'));
+        }
         return back();
     }
 
@@ -139,6 +141,9 @@ class WorkerUserController extends Controller
         }
 
         $this->alert('success', __('main.workerUser'), __('messages.updated', ['model' => __('main.workerUser')]));
+        if ($request->has('redirect')) {
+            return  redirect()->to($request->get('redirect'));
+        }
         return back();
     }
 

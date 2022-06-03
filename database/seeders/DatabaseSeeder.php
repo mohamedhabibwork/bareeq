@@ -31,21 +31,28 @@ class DatabaseSeeder extends Seeder
 
         Plan::factory(5)->create();
 
-        User::factory()
+        $user = User::factory()
+            ->hasAttached(Plan::factory(5))
             ->has(Car::factory(),'car')
             ->has(SingleRequest::factory(5),'single_requests')->create([
             'name' => 'admin',
             'phone' => '01098989297',
             'password' => '123456789'
         ]);
-
+        SingleRequest::factory(25)
+            ->create();
         UserPlan::factory(5)->create();
-        Worker::factory()->create([
+
+        Worker::factory()
+            ->has(WorkerUser::factory(5)->set('user_id',$user->id),'orders')
+            ->create([
             'name' => 'admin',
             'phone' => '01098989297',
             'password' => '123456789'
         ]);
-        WorkerUser::factory(50)->create();
 
+        WorkerUser::factory(rand(20,50))->set('user_id',$user->id)->set('worker_id',null)->create();
+        WorkerUser::factory(50)->create();
+        User::factory(10)->set('wish_day',date('l'))->hasAttached(Plan::factory(5))->create();
     }
 }

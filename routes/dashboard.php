@@ -53,6 +53,12 @@ Route::group(['middleware' => 'auth:web'],function () use ($callback) {
         ->prefix('single-request')
         ->name('singleRequest.')->group($callback);
 
+    Route::controller('SingleRequestController')
+        ->prefix('single-request')
+        ->name('singleRequest.')->group(function () {
+            Route::post('/accept/{id}','accept')->name('accept');
+        });
+
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
 });

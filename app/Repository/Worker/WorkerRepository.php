@@ -178,7 +178,7 @@ class WorkerRepository extends BaseRepository implements WorkerInterface
      */
     public function orders(Worker $worker)
     {
-        return $worker->orders()->where('created_at', today())->simplePaginate();
+        return $worker->orders()->with(['user','plan'])->latest()->simplePaginate();
     }
 
     /**

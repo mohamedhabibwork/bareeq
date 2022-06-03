@@ -74,7 +74,7 @@ class WorkerUserDataTable extends DataTable
             Column::make('id','id')->title(__('main.id')),
             Column::make('user.name','user_id')->title(__('main.user_id')),
             Column::make('worker.name','worker.name')->render('full.worker?full.worker.name: "'.__('main.worker_not_selected').'"')->title(__('main.worker_id')),
-            Column::make('plan.name','plan_id')->render('full.plan?full.plan.name: "'.__('main.no_plan').'"')->title(__('main.plan_id')),
+//            Column::make('plan.name','plan_id')->render('full.plan?full.plan.name: "'.__('main.no_plan').'"')->title(__('main.plan_id')),
             Column::make('user_status','status')->title(__('main.user_status')),
             Column::make('order_status','status')->title(__('main.order_status')),
             Column::make('after_images','after_images')->title(__('main.after_images')),

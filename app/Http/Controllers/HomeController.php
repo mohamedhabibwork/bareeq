@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Charts\WorkerOrderChart;
+use App\Repository\SingleRequest\SingleRequestRepository;
 use App\Repository\User\UserInterface;
 use App\Repository\WorkerUser\WorkerUserRepository;
 use Illuminate\Contracts\Support\Renderable;
@@ -32,7 +33,8 @@ class HomeController extends Controller
     {
         $wish_day = $request->get('wish_day', date('l'));
         $users = $this->repository->getDayUsers($wish_day);
-        $orders = app(WorkerUserRepository::class)->getDayOrders($request->get('date', today()));
+        $orders = app(SingleRequestRepository::class)->getDayOrders();
+//        dd(compact('users','orders'));
         $chart = $chart->build();
         return view('home', compact('users', 'orders', 'chart'));
     }

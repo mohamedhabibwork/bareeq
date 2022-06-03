@@ -20,6 +20,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -210,7 +211,7 @@ class UserController extends Controller
 
     public function notifications(Request $request)
     {
-        return WorkerUserResource::collection($this->repository->notifications($request->user()));
+        return new DatabaseNotificationCollection($this->repository->notifications($request->user()));
     }
 
     public function attachCar(StoreCarRequest $request)

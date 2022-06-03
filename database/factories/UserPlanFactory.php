@@ -19,9 +19,8 @@ class UserPlanFactory extends Factory
     public function definition()
     {
         return [
-            'user_id' => User::factory(),
-            'plan_id' => Plan::factory(),
-
+            'user_id' => $this->faker->boolean(80) ? (User::inRandomOrder()->first()?->id?:User::factory()):User::factory(),
+            'plan_id' => $this->faker->boolean(80) ? (Plan::inRandomOrder()->first()?->id?:Plan::factory()):Plan::factory(),
         ];
     }
 }

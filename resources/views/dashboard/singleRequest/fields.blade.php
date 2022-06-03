@@ -1,3 +1,6 @@
+@if (request()->has('redirect'))
+    {{ Form::hidden('redirect',request('redirect'))}}
+@endif
 <div class="form-group">
     {{ Form::label(__('main.car_name'), null, ['class' => 'control-label']) }}
     {{ Form::text('car_name', old('car_name'), array_merge(['class' => 'form-control  '.($errors->has('car_name') ? 'is-invalid' : '')],['required'=>true])) }}

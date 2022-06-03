@@ -8,6 +8,7 @@ use App\Http\Requests\SingleRequest\StoreSingleRequestRequest;
 use App\Http\Requests\SingleRequest\UpdateSingleRequestRequest;
 use App\Models\SingleRequest;
 use App\Repository\SingleRequest\SingleRequestInterface;
+use App\Repository\Worker\WorkerInterface;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -111,7 +112,7 @@ class SingleRequestController extends Controller
      *
      * @param UpdateSingleRequestRequest $request
      * @param int $id
-     * @return RedirectResponse|SingleRequestResource|JsonResponse
+     * @return RedirectResponse|JsonResponse
      */
     public function update(UpdateSingleRequestRequest $request, int $id)
     {
@@ -135,7 +136,7 @@ class SingleRequestController extends Controller
      * Remove the specified resource from storage.
      *
      * @param int $id
-     * @return RedirectResponse|SingleRequestResource|JsonResponse
+     * @return RedirectResponse|JsonResponse
      */
     public function destroy(int $id)
     {
@@ -206,6 +207,26 @@ class SingleRequestController extends Controller
         $this->alert('success', __('main.singleRequest'), __('messages.status_updated', ['model' => __('main.singleRequest'), 'status' => $model->status]));
 
         return back();
+    }
+
+    public function accept(Request $request, int $id)
+    {
+        if (!$model = $this->repository->find($id, fn($q) => $q->with('user'))) {
+            $this->alert('error', __('main.singleRequest'), __('messages.not_found', ['model' => __('main.singleRequest')]));
+            return ApiResponse::notFound();
+        }
+        $request->validate(['worker_id' => ['required', 'exists:workers,id']]);
+        if (!$this->repository->createOrder($model, app(WorkerInterface::class)->find($request->get('worker_id')))) {
+            $this->alert('error', __('main.singleRequest'), __('messages.not_save', ['model' => __('main.singleRequest')]));
+            return back();
+        }
+
+        $this->alert('success', __('main.singleRequest'), __('messages.saved', ['model' => __('main.singleRequest')]));
+        if ($request->has('redirect')) {
+            return redirect()->to($request->get('redirect'));
+        }
+        return back();
+
     }
 
 }

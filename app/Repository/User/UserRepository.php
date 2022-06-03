@@ -3,6 +3,7 @@
 namespace App\Repository\User;
 
 use App\DataTables\Dashboard\UserDatatable;
+use App\Events\Orders\OrderCreatedEvent;
 use App\Models\Car;
 use App\Models\Plan;
 use App\Models\SingleRequest;
@@ -12,8 +13,12 @@ use App\Models\WorkerUser;
 use App\Repository\BaseRepository;
 use App\Repository\Traits\AuthTrait;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Pagination\Paginator;
+use LaravelIdea\Helper\App\Models\_IH_WorkerUser_C;
 use Yajra\DataTables\Services\DataTable;
 
 /**
@@ -39,21 +44,19 @@ class UserRepository extends BaseRepository implements UserInterface
      */
     public function getDayUsers(?string $day = null): LengthAwarePaginator
     {
-        $this->request->request->add(['wish_day' => $day ?? date('l')]);
+        $this->request->request->add(['wish_day' => mb_strtolower($day ?? date('l'))]);
         $query = $this->model
             ->has('plans')
             ->withSum('plans', 'wishing_count')
             ->withCount('orders')
-            ->whereDoesntHave('orders', function ($q) {
-                $q->whereDate('worker_user.created_at', today());
-            })
+            ->whereDoesntHave('orders', fn($q) => $q->whereDate('worker_user.created_at', today()))
             ->having('plans_sum_wishing_count', '>', 'orders_count');
 
-        return $this->applyFilter($query)->paginate();
+        return $this->applyFilter($query)->paginate(pageName: 'orders')->withQueryString();
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder[]|Collection
+     * @return Builder[]|Collection
      */
     public function all()
     {
@@ -192,25 +195,29 @@ class UserRepository extends BaseRepository implements UserInterface
      */
     public function createOrder(User $user, Plan $plan)
     {
-        return WorkerUser::create(['user_id' => $user->id, 'plan_id' => $plan->id]);
+        return \DB::transaction(function () use ($user, $plan) {
+            return tap($plan->orders()->create(['user_id' => $user->id]), function (WorkerUser $workerUser) {
+                event(new OrderCreatedEvent($workerUser));
+            });
+        });
     }
 
     /**
      * @param User $user
-     * @return Worker[]|LengthAwarePaginator|\Illuminate\Pagination\LengthAwarePaginator
-     */
-    public function notifications(User $user)
-    {
-        return $user->orders()->where('user_status', WorkerUser::USER_STATUS['pending'])->simplePaginate();
-    }
-
-    /**
-     * @param User $user
-     * @return \Illuminate\Contracts\Pagination\Paginator|\Illuminate\Pagination\Paginator|\LaravelIdea\Helper\App\Models\_IH_WorkerUser_C|Worker[]
+     * @return \Illuminate\Contracts\Pagination\Paginator|Paginator|_IH_WorkerUser_C|Worker[]
      */
     public function orders(User $user)
     {
-        return $user->orders()->with(['worker','plan'])->simplePaginate();
+        return $user->orders()->with(['worker', 'plan'])->simplePaginate();
+    }
+
+    /**
+     * @param User $user
+     * @return Paginator|DatabaseNotification[]
+     */
+    public function notifications(User $user)
+    {
+        return $user->notifications()->simplePaginate();
     }
 
     /**
@@ -258,7 +265,7 @@ class UserRepository extends BaseRepository implements UserInterface
      * @param int $rate
      * @return bool
      */
-    public function rateOrder(WorkerUser $order, int $rate)
+    public function rateOrder(WorkerUser $order, int $rate): bool
     {
         return $order->forceFill(compact('rate'))->save();
     }

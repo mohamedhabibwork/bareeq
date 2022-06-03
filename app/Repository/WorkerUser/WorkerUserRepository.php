@@ -3,6 +3,7 @@
 namespace App\Repository\WorkerUser;
 
 use App\DataTables\Dashboard\WorkerUserDatatable;
+use App\Events\Orders\OrderCreatedEvent;
 use App\Models\WorkerUser;
 use App\Repository\BaseRepository;
 use Illuminate\Database\Eloquent\Collection;
@@ -52,7 +53,7 @@ class WorkerUserRepository extends BaseRepository implements WorkerUserInterface
             return false;
         }
         // sync
-
+        event(new OrderCreatedEvent($saved));
         return $saved;
     }
 

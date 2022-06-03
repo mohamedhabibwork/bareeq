@@ -4,6 +4,9 @@ namespace App\Repository\SingleRequest;
 
 use App\DataTables\Dashboard\SingleRequestDatatable;
 use App\Models\SingleRequest;
+use App\Models\User;
+use App\Models\Worker;
+use App\Models\WorkerUser;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Yajra\DataTables\Services\DataTable;
@@ -36,4 +39,8 @@ interface SingleRequestInterface
     public function update(int|SingleRequest $model, array $data): SingleRequest|bool;
 
     public function deletedOnly(): array|LengthAwarePaginator;
+
+    public function createOrder(SingleRequest $model,Worker $worker): WorkerUser;
+
+    public function getDayOrders();
 }
