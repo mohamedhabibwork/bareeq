@@ -175,13 +175,12 @@ class UserController extends Controller
         ]);
 
         return DB::transaction(function () use ($request, $order, $validated, $orderInterface) {
-            if (!$orderInterface->update($order, ['user_status' => $validated['status'] ?? 3]))
+            if (!$orderInterface->update($order, ['user_status' => $validated['status']]))
                 return ApiResponse::error(__('main.update_fail'));
             // if not changed
-            if ($validated['status'] != 3) return ApiResponse::success(__('main.update'));
+            if ($validated['status'] != WorkerUser::USER_STATUS['changed']) return ApiResponse::success(__('main.update'));
 
-            unset($validated['status']);
-            $request->validate([
+            $validated  = $request->validate([
                 'start_time' => ['sometimes', 'required', 'date_format:h:i'],
                 'end_time' => ['sometimes', 'required', 'date_format:h:i', 'after_or_equal:start_time'],
                 'wish_day' => ['sometimes', 'required', 'string', Rule::in(['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'])],
