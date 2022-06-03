@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::view('/', 'welcome');
+Route::redirect('/home', 'dashboard');
 
 Route::controller('\Barryvdh\TranslationManager\Controller')->prefix(config('translation-manager.route.prefix','translations'))->group( function($router) {
     $router->get('view/{groupKey?}', 'getView')->where('groupKey', '.*');

@@ -53,18 +53,18 @@ class UserDatatable extends DataTable
             ->orderBy(0)
             ->language(fileLangDatatable())
             ->buttons(
-                Button::make('create')->action('window.location = "' . route('dashboard.users.create') . '";'),
+                Button::make('create')->action('window.location = "' . route('dashboard.users.create') . '";')->text(__('main.create')),
                 Button::make('colvis'),
 //                Button::make('export'),
 //                Button::make('pdfHtml5'),
 //                Button::make('csvHtml5'),
-                Button::make('print'),
+                Button::make('print')->text(__('main.print')),
 //                Button::make('selectAll'),
 //                Button::make('selectNone'),
-                Button::make('reset'),
+                Button::make('reset')->text(__('main.reset')),
 //                Button::make('json'),
 //                Button::make('copy'),
-                Button::make('reload')
+                Button::make('reload')->text(__('main.reload')),
             );
     }
 
@@ -82,6 +82,7 @@ class UserDatatable extends DataTable
 //            Column::make('phone_verified_at'),
             Column::make('created_at')->title(__('main.created_at')),
             Column::computed('action')
+                ->title(__('main.action'))
                 ->exportable(false)
                 ->printable(false)
                 ->width(60)

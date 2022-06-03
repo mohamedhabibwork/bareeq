@@ -10,13 +10,23 @@ class Plan extends BaseModel
 {
     use HasFactory;
 
+    const TYPE = [
+        'normal' => 0,
+        'best' => 1,
+    ];
+
     protected $fillable = [
         'name',
         'price',
         'description',
         'wishing_count',
         'status',
+        'type',
         'images',
+    ];
+
+    protected $attributes = [
+        'type' => self::TYPE['normal'],
     ];
 
     protected $casts = [
@@ -24,6 +34,7 @@ class Plan extends BaseModel
         'wishing_count' => 'integer',
         'price' => 'double',
         'status' => 'boolean',
+        'type' => 'int',
     ];
 
     public function users()

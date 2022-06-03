@@ -10,7 +10,7 @@ class UpdateAdminRequest extends FormRequest
     use RequestMethods;
 
     protected array $filesKeys = [];
-    protected array $forgetIfNull = [];
+    protected array $forgetIfNull = ['password','password_confirmation'];
     protected array $encryption = [];
 
     /**

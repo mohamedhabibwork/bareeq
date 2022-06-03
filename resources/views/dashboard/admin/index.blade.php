@@ -1,3 +1,6 @@
 <x-layout.app>
-    @include('dashboard::admin.datatable')
+    <br>
+    <div>
+        @include('dashboard::admin.datatable')
+    </div>
 </x-layout.app>

@@ -21,7 +21,7 @@ class CarDatatable extends DataTable
     {
         return datatables()
             ->eloquent($query)
-            ->editColumn('created_at',fn($model)=>$model->created_at->format('Y-m-d'))
+            ->editColumn('created_at', fn($model) => $model->created_at->format('Y-m-d'))
             ->addColumn('action', 'dashboard::car.action');
     }
 
@@ -51,10 +51,10 @@ class CarDatatable extends DataTable
             ->orderBy(0)
             ->language(fileLangDatatable())
             ->buttons(
-                Button::make('create')->action('window.location = "' . route('dashboard.cars.create') . '";'),
-                Button::make('print'),
-                Button::make('reset'),
-                Button::make('reload')
+                Button::make('create')->action('window.location = "' . route('dashboard.cars.create') . '";')->text(__('main.create')),
+                Button::make('colvis'), Button::make('print')->text(__('main.print')),
+                Button::make('reset')->text(__('main.reset')),
+                Button::make('reload')->text(__('main.reload')),
             );
     }
 
@@ -74,6 +74,7 @@ class CarDatatable extends DataTable
             Column::make('user_id')->title(__('main.user_id')),
             Column::make('created_at')->title(__('main.created_at')),
             Column::computed('action')
+                ->title(__('main.action'))
                 ->exportable(false)
                 ->printable(false)
                 ->width(60)

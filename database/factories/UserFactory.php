@@ -23,8 +23,8 @@ class UserFactory extends Factory
             'phone_verified_at' => now(),
             'password' => '123456789', // password
             'remember_token' => Str::random(10),
-            'start_time'=>$this->faker->time(),
-            'end_time'=>$this->faker->time(),
+            'start_time'=>$this->faker->time('H:i'),
+            'end_time'=>$this->faker->time('H:i'),
             'wish_day'=>$this->faker->dayOfWeek(),
             'status'=>$this->faker->boolean(),
         ];

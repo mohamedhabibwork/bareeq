@@ -8,7 +8,7 @@
 @endpush
 
 <x-dashboard.card>
-    {{ $dataTable->table() }}
+    {{ $dataTable->table(['class'=>'w-100 table text-center']) }}
 </x-dashboard.card>
 
 @push('js')

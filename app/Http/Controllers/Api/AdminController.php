@@ -10,6 +10,7 @@ use App\Http\Resources\Admin\AdminResource;
 use App\Repository\Admin\AdminInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class AdminController extends Controller
@@ -82,15 +83,18 @@ class AdminController extends Controller
     /**
      * Remove the specified resource from storage.
      *
+     * @param Request $request
      * @param int $id
      * @return AdminResource|JsonResponse|Response
      */
-    public function destroy(int $id)
+    public function destroy(Request $request,int $id)
     {
         if (!$admin = $this->repository->find($id)) {
             return ApiResponse::notFound();
         }
-
+        if ($admin->is($request->user())) {
+            return ApiResponse::error(__('main.delete_fail', ['model' => __('main.admin')]));
+        }
         if (!$this->repository->delete($admin)) {
             return ApiResponse::error(__('main.delete_fail', ['model' => __('main.admin')]));
         }

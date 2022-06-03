@@ -3,7 +3,9 @@
 namespace App\Http\Requests\Plan;
 
 use App\Http\Requests\RequestMethods;
+use App\Models\Plan;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdatePlanRequest extends FormRequest
 {
@@ -22,10 +24,11 @@ class UpdatePlanRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string'],
-            'price' => ['required', 'numeric'],
-            'description' => ['required', 'string'],
-            'wishing_count' => ['required', 'integer', 'min:1'],
-            'status' => ['required', 'boolean'],
+            'price' => ['sometimes','required', 'numeric','min:0'],
+            'description' => ['sometimes','required', 'string'],
+            'wishing_count' => ['sometimes','required', 'integer', 'min:1'],
+            'type' => ['sometimes','required', 'int',Rule::in(array_values(Plan::TYPE))],
+            'status' => ['sometimes','required', 'boolean'],
             'images' => ['sometimes', 'required', 'array'],
             'images.*' => ['required', 'image']
         ];

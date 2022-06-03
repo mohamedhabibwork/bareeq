@@ -135,15 +135,18 @@ class AdminController extends Controller
      * Remove the specified resource from storage.
      *
      * @param int $id
-     * @return RedirectResponse|AdminResource|JsonResponse
+     * @return RedirectResponse|JsonResponse
      */
-    public function destroy(int $id)
+    public function destroy(Request $request,int $id)
     {
         if (!$model = $this->repository->find($id)) {
             $this->alert('error', __('main.admin'), __('messages.not_found', ['model' => __('main.admin')]));
             return ApiResponse::notFound();
         }
-
+        if ($model->is($request->user())) {
+            $this->alert('error', __('main.admin'), __('messages.not_delete', ['model' => __('main.admin')]));
+            return back();
+        }
         if (!$this->repository->delete($model)) {
             $this->alert('error', __('main.admin'), __('messages.not_delete', ['model' => __('main.admin')]));
             return back();

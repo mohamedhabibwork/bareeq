@@ -52,10 +52,10 @@ class WorkerDatatable extends DataTable
             ->orderBy(0)
             ->language(fileLangDatatable())
             ->buttons(
-                Button::make('create')->action('window.location = "' . route('dashboard.workers.create') . '";'),
-                Button::make('print'),
-                Button::make('reset'),
-                Button::make('reload')
+                Button::make('create')->action('window.location = "' . route('dashboard.workers.create') . '";')->text(__('main.create')),
+                Button::make('colvis'),Button::make('print')->text(__('main.print')),
+                Button::make('reset')->text(__('main.reset')),
+                Button::make('reload')->text(__('main.reload')),
             );
     }
 
@@ -74,6 +74,7 @@ class WorkerDatatable extends DataTable
             Column::make('phone_verified_at')->title(__('main.phone_verified_at')),
             Column::make('created_at')->title(__('main.created_at')),
             Column::computed('action')
+                ->title(__('main.action'))
                 ->exportable(false)
                 ->printable(false)
                 ->width(60)

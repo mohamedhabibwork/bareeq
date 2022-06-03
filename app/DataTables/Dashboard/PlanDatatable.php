@@ -53,17 +53,17 @@ class PlanDatatable extends DataTable
             ->orderBy(0)
             ->language(fileLangDatatable())
             ->buttons(
-                Button::make('create')->action('window.location = "' . route('dashboard.plans.create') . '";'),
-                Button::make('print'),
-                Button::make('reset'),
-                Button::make('reload')
+                Button::make('create')->action('window.location = "' . route('dashboard.plans.create') . '";')->text(__('main.create')),
+                Button::make('colvis'),Button::make('print')->text(__('main.print')),
+                Button::make('reset')->text(__('main.reset')),
+                Button::make('reload')->text(__('main.reload')),
             );
     }
 
     /**
      * Get columns.
      *
-     * @return array
+     * @return array|Column[]
      */
     protected function getColumns()
     {
@@ -71,12 +71,12 @@ class PlanDatatable extends DataTable
             Column::make('id')->title(__('main.id')),
             Column::make('name')->title(__('main.name')),
             Column::make('price')->title(__('main.price')),
-            Column::make('description')->title(__('main.description')),
             Column::make('wishing_count')->title(__('main.wishing_count')),
             Column::make('status')->title(__('main.status')),
             Column::make('images')->title(__('main.images')),
             Column::make('created_at')->title(__('main.created_at')),
             Column::computed('action')
+                ->title(__('main.action'))
                 ->exportable(false)
                 ->printable(false)
                 ->width(60)

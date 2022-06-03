@@ -2,11 +2,15 @@
     <div class="row">
         <div class="col-md-12">
             <x-dashboard.card>
-                @foreach($model->getAttributes() as $key => $field)
-                    @if (!in_array($key,$model->getHidden()))
-                        <li>{{ "$key => $field" }}</li>
-                    @endif
-                @endforeach
+                <div class="row">
+                    @foreach($model->getAttributes() as $key => $field)
+                        @if (!in_array($key,$model->getHidden()))
+                            <div class="col-md-4 p-3" style="font-size: large">
+                                {{ __("main.{$key}")." : " }} <b>{{ $field }}</b>
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
             </x-dashboard.card>
         </div>
     </div>

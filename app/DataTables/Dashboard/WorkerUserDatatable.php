@@ -37,7 +37,7 @@ class WorkerUserDataTable extends DataTable
      */
     public function query(WorkerUser $model)
     {
-        return $model->newQuery();
+        return $model->query()->with(['user','plan','worker']);
     }
 
     /**
@@ -55,31 +55,33 @@ class WorkerUserDataTable extends DataTable
             ->orderBy(0)
             ->language(fileLangDatatable())
             ->buttons(
-                Button::make('create')->action('window.location = "' . route('dashboard.worker_users.create') . '";'),
-                Button::make('print'),
-                Button::make('reset'),
-                Button::make('reload')
+                Button::make('create')->action('window.location = "' . route('dashboard.worker_users.create') . '";')->text(__('main.create')),
+                Button::make('colvis'),
+                Button::make('print')->text(__('main.print')),
+                Button::make('reset')->text(__('main.reset')),
+                Button::make('reload')->text(__('main.reload')),
             );
     }
 
     /**
      * Get columns.
-     *
+     * languid
      * @return array
      */
     protected function getColumns()
     {
         return [
             Column::make('id','id')->title(__('main.id')),
-            Column::make('user_id','user_id')->title(__('main.user_id')),
-            Column::make('worker_id','worker_id')->title(__('main.worker_id')),
-            Column::make('plan_id','plan_id')->title(__('main.plan_id')),
-            Column::make('user_status','status')->title(__('main.status')),
-            Column::make('order_status','status')->title(__('main.status')),
+            Column::make('user.name','user_id')->title(__('main.user_id')),
+            Column::make('worker.name','worker.name')->render('full.worker?full.worker.name: "'.__('main.worker_not_selected').'"')->title(__('main.worker_id')),
+            Column::make('plan.name','plan_id')->render('full.plan?full.plan.name: "'.__('main.no_plan').'"')->title(__('main.plan_id')),
+            Column::make('user_status','status')->title(__('main.user_status')),
+            Column::make('order_status','status')->title(__('main.order_status')),
             Column::make('after_images','after_images')->title(__('main.after_images')),
             Column::make('before_images','before_images')->title(__('main.before_images')),
             Column::make('created_at','created_at')->title(__('main.created_at')),
             Column::computed('action')
+                ->title(__('main.action'))
                 ->exportable(false)
                 ->printable(false)
                 ->width(60)

@@ -35,7 +35,7 @@ class PlanController extends Controller
      * Store a newly created resource in storage.
      *
      * @param StorePlanRequest $request
-     * @return PlanResource|JsonResponse|Response
+     * @return JsonResponse|PlanResource
      */
     public function store(StorePlanRequest $request)
     {

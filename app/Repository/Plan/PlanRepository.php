@@ -170,7 +170,7 @@ class PlanRepository extends BaseRepository implements PlanInterface
      */
     public function best(): LengthAwarePaginator
     {
-        return $this->model->inRandomOrder()->paginate();
+        return $this->model->inRandomOrder()->where('type',Plan::TYPE['best'])->paginate();
     }
 
 }
