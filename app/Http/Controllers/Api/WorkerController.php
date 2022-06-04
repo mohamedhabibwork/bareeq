@@ -52,7 +52,7 @@ class WorkerController extends Controller
      * Store a newly created resource in storage.
      *
      * @param StoreWorkerRequest $request
-     * @return WorkerResource|JsonResponse|Response
+     * @return JsonResponse|WorkerResource
      */
     public function store(StoreWorkerRequest $request)
     {
@@ -66,8 +66,8 @@ class WorkerController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param int $id
-     * @return WorkerResource|JsonResponse|Response
+     * @param Request $request
+     * @return WorkerResource
      */
     public function show(Request $request)
     {
@@ -79,8 +79,7 @@ class WorkerController extends Controller
      * Update the specified resource in storage.
      *
      * @param UpdateWorkerRequest $request
-     * @param int $id
-     * @return WorkerResource|JsonResponse|Response
+     * @return JsonResponse|WorkerResource
      */
     public function update(UpdateWorkerRequest $request)
     {
@@ -125,7 +124,9 @@ class WorkerController extends Controller
             return ApiResponse::error(__('main.order not available for you'), code: 403);
         }
 
-        if ($order->status !== WorkerUser::ORDER_STATUS['progress'])
+        if ($order->order_status ==WorkerUser::ORDER_STATUS['success']) return ApiResponse::error(__('main.order has finish'));
+
+        if ($order->order_status !== WorkerUser::ORDER_STATUS['progress'])
             return ApiResponse::error(__('main.order not started yet'));
 
         $images = $request->validate(['after_images' => ['required', 'array'], 'after_images.*' => ['required', 'image']])['after_images'];

@@ -21,7 +21,6 @@ class WorkerOrderChart
         $workers = Worker::query()->select(['id', 'name'])->addSelect([
             'orders_count' => WorkerUser::selectRaw('count(*)')
                 ->where('user_status',  WorkerUser::USER_STATUS['success'])
-                ->whereNotIn('order_status', [WorkerUser::USER_STATUS['success']])
                 ->whereColumn('workers.id', 'worker_user.worker_id')
                 ->whereDate('created_at', today())
                 ->limit(1),
