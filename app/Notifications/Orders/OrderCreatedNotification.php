@@ -21,15 +21,11 @@ class OrderCreatedNotification extends Notification
 
     public function toDatabase($notifiable): array
     {
-        return [
-            //
-        ];
+        return $this->toArray($notifiable);
     }
 
     public function toArray($notifiable): array
     {
-        return [
-            //
-        ];
+        return $this->workerUser->withoutRelations()->toArray();
     }
 }
