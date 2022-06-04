@@ -31,6 +31,7 @@ class WorkerOrderChart
                 ->whereDate('created_at', today())
                 ->limit(1),
         ])->get();
+
         $names = $workers->pluck('name')->values()->toArray() ?? [];
         $orders_count = $workers->pluck('orders_count')->values()->toArray() ?? [];
         $orders_success_count = $workers->pluck('orders_success_count')->values()->toArray() ?? [];
