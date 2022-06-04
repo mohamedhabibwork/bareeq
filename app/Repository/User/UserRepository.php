@@ -197,7 +197,7 @@ class UserRepository extends BaseRepository implements UserInterface
     public function createOrder(User $user, Plan $plan)
     {
         return DB::transaction(function () use ($user, $plan) {
-            return tap($plan->orders()->create(['user_id' => $user->id,'user_status' => WorkerUser::USER_STATUS['success']]), function (WorkerUser $workerUser) {
+            return tap($plan->orders()->create(['user_id' => $user->id, 'user_status' => WorkerUser::USER_STATUS['success']]), function (WorkerUser $workerUser) {
                 event(new OrderCreatedEvent($workerUser));
             });
         });
@@ -287,7 +287,7 @@ class UserRepository extends BaseRepository implements UserInterface
      */
     public function verifyOTPCode(User $user, string $code): bool
     {
-        return $user->otp_code == $code && $user->update(['otp_code' => null]);
+        return $user->otp_code == $code && $user->update(['otp_code' => null, 'phone_verified_at' => now()]);
     }
 
     /**
