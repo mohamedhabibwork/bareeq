@@ -12,6 +12,7 @@ use App\Models\Worker;
 use App\Models\WorkerUser;
 use App\Repository\BaseRepository;
 use App\Repository\Traits\AuthTrait;
+use DB;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -195,8 +196,8 @@ class UserRepository extends BaseRepository implements UserInterface
      */
     public function createOrder(User $user, Plan $plan)
     {
-        return \DB::transaction(function () use ($user, $plan) {
-            return tap($plan->orders()->create(['user_id' => $user->id]), function (WorkerUser $workerUser) {
+        return DB::transaction(function () use ($user, $plan) {
+            return tap($plan->orders()->create(['user_id' => $user->id,'user_status' => WorkerUser::USER_STATUS['success']]), function (WorkerUser $workerUser) {
                 event(new OrderCreatedEvent($workerUser));
             });
         });
@@ -268,6 +269,35 @@ class UserRepository extends BaseRepository implements UserInterface
     public function rateOrder(WorkerUser $order, int $rate): bool
     {
         return $order->forceFill(compact('rate'))->save();
+    }
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public function generateOTPCode(User $user): bool
+    {
+        return $user->forceFill(['otp_code' => rand(1000, 9999)])->save();
+    }
+
+    /**
+     * @param User $user
+     * @param string $code
+     * @return bool
+     */
+    public function verifyOTPCode(User $user, string $code): bool
+    {
+        return $user->otp_code == $code && $user->update(['otp_code' => null]);
+    }
+
+    /**
+     * @param User $user
+     * @param string $password
+     * @return mixed
+     */
+    public function resetPassword(User $user, string $password)
+    {
+        return $user->update(compact('password') + ['otp_code' => null]);
     }
 
 

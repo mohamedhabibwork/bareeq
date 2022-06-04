@@ -27,12 +27,19 @@ class UserController extends Controller
 {
     private UserInterface $repository;
 
+    /**
+     * @param UserInterface $repository
+     */
     public function __construct(UserInterface $repository)
     {
         $this->repository = $repository;
     }
 
 
+    /**
+     * @param Request $request
+     * @return UserResource|JsonResponse
+     */
     public function login(Request $request)
     {
         $request->validate([
@@ -74,6 +81,8 @@ class UserController extends Controller
         $user = $request->user();
         $user->loadMissing(['plans', 'car']);
         $user->loadCount('order_in_plan');
+        $user->loadSum('plans', 'wishing_count');
+        $user->withCasts(['plans_sum_wishing_count' => 'integer']);
         return new UserResource($user);
     }
 
@@ -95,11 +104,19 @@ class UserController extends Controller
         return ApiResponse::success(__('main.deleted_success', ['model' => __('main.user')]));
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
     public function orders(Request $request)
     {
         return WorkerUserResource::collection($this->repository->orders($request->user()));
     }
 
+    /**
+     * @param Request $request
+     * @return WorkerUserResource|JsonResponse
+     */
     public function storeOrder(Request $request)
     {
         $user = $request->user();
@@ -112,6 +129,10 @@ class UserController extends Controller
         return new WorkerUserResource($order);
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function subscribe(Request $request)
     {
         $request->validate(['plan_id' => ['required', 'integer', 'exists:plans,id']]);
@@ -122,11 +143,19 @@ class UserController extends Controller
         return ApiResponse::success(__('main.plan subscribe successfully'));
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
     public function singles(Request $request)
     {
         return SingleRequestResource::collection($this->repository->singles($request->user()));
     }
 
+    /**
+     * @param StoreSingleRequestRequest $request
+     * @return SingleRequestResource|JsonResponse
+     */
     public function createSingleRequest(StoreSingleRequestRequest $request)
     {
         if (!$single = $this->repository->createSingleRequest($request->user(), $request->validatedData())) {
@@ -135,6 +164,11 @@ class UserController extends Controller
         return new SingleRequestResource($single);
     }
 
+    /**
+     * @param Request $request
+     * @param int $id
+     * @return JsonResponse|never
+     */
     public function rateOrder(Request $request, int $id)
     {
         $orderInterface = app(WorkerUserInterface::class);
@@ -158,6 +192,11 @@ class UserController extends Controller
         return ApiResponse::success(__('main.rated'));
     }
 
+    /**
+     * @param Request $request
+     * @param int $id
+     * @return JsonResponse|mixed|never
+     */
     public function statusOrder(Request $request, int $id)
     {
         $orderInterface = app(WorkerUserInterface::class);
@@ -180,7 +219,7 @@ class UserController extends Controller
             // if not changed
             if ($validated['status'] != WorkerUser::USER_STATUS['changed']) return ApiResponse::success(__('main.update'));
 
-            $validated  = $request->validate([
+            $validated = $request->validate([
                 'start_time' => ['sometimes', 'required', 'date_format:h:i'],
                 'end_time' => ['sometimes', 'required', 'date_format:h:i', 'after_or_equal:start_time'],
                 'wish_day' => ['sometimes', 'required', 'string', Rule::in(['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'])],
@@ -208,11 +247,19 @@ class UserController extends Controller
         return new UserResource($user);
     }
 
+    /**
+     * @param Request $request
+     * @return DatabaseNotificationCollection
+     */
     public function notifications(Request $request)
     {
         return new DatabaseNotificationCollection($this->repository->notifications($request->user()));
     }
 
+    /**
+     * @param StoreCarRequest $request
+     * @return CarResource|JsonResponse
+     */
     public function attachCar(StoreCarRequest $request)
     {
         $validated = $request->validatedData();
@@ -221,5 +268,46 @@ class UserController extends Controller
             return ApiResponse::error(__('main.update_fail', ['model' => __('main.user')]));
         }
         return new CarResource($car);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function generateOTPCode(Request $request)
+    {
+        if (!$user = $this->repository->generateOTPCode($request->user())) {
+            return ApiResponse::error(__('main.update_fail', ['model' => __('main.user')]));
+        }
+        return ApiResponse::success(__('main.code_send'));
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function verifyOTPCode(Request $request)
+    {
+        $request->validate(['code' => ['required', 'string', 'size:4']]);
+        if (!$this->repository->verifyOTPCode($request->user(), $request->get('code'))) {
+            return ApiResponse::error(__('main.not_verify', ['model' => __('main.user')]));
+        }
+        return ApiResponse::success(__('main.verified'));
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function resetPassword(Request $request)
+    {
+        $request->validate(['code' => ['required', 'string', 'size:4'],'password'=>['required','string','min:6','confirmed']]);
+        if (!$this->repository->verifyOTPCode($request->user(), $request->get('code'))) {
+            return ApiResponse::error(__('main.not_verify', ['model' => __('main.user')]));
+        }
+        if (!$this->repository->resetPassword($request->user(), $request->get('password'))) {
+            return ApiResponse::error(__('main.not_reset', ['model' => __('main.user')]));
+        }
+        return ApiResponse::success(__('main.reset'));
     }
 }

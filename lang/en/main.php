@@ -85,4 +85,6 @@ return array(
     'lat' => 'Latitude',
     'lng' => 'Languid',
     'otp_code' => 'OPT Code',
+    'request_today' => 'Request Today',
+    'no_requests_available_today' => 'No Requests Available Today',
 );

@@ -36,10 +36,9 @@ class UserResource extends JsonResource
             'updated_at' => $this->updated_at,
             'order_in_plan' => $this->order_in_plan_count ?? new MissingValue(),
             'wishing_count_sum' => $this->wishing_count_sum ?? new MissingValue(),
-            'notifications' => new DatabaseNotificationCollection($this->whenLoaded('notifications')),
+            'plans_sum_wishing_count' => $this->plans_sum_wishing_count ?? new MissingValue(),
             'car' => new CarResource($this->whenLoaded('car')),
             'plans' => PlanResource::collection($this->whenLoaded('plans')),
-            'single_requests_count' => SingleRequestResource::collection($this->whenLoaded('single_requests')),
         ];
     }
 }

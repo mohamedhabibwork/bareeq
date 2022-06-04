@@ -62,6 +62,7 @@ class WorkerUserController extends Controller
             abort_if(!$user || !$plan || !$user->availableOrderInPlan($plan), 404);
             $data['user_id'] = $user->id;
             $data['plan_id'] = $plan->id;
+            $data['plan_type'] = $plan->getMorphClass();
         }
         $model = new WorkerUser($data);
 

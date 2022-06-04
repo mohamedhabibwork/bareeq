@@ -23,5 +23,12 @@ Route::group(['prefix' => 'users'], function () {
         Route::post('orders/{id}/update/status', [UserController::class, 'statusOrder']);
         Route::get('requests', [UserController::class, 'singles']);
         Route::post('requests', [UserController::class, 'createSingleRequest']);
+
+        Route::post('otp/code', [UserController::class, 'generateOTPCode']);
+        Route::post('otp/verify', [UserController::class, 'verifyOTPCode']);
+
+        Route::post('reset/code', [UserController::class, 'generateOTPCode']);
+        Route::post('reset/password', [UserController::class, 'resetPassword']);
+
     });
 });

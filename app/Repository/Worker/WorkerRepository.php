@@ -8,6 +8,7 @@ use App\Models\Worker;
 use App\Models\WorkerUser;
 use App\Repository\BaseRepository;
 use App\Repository\Traits\AuthTrait;
+use App\Repository\WorkerUser\WorkerUserRepository;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
@@ -178,7 +179,9 @@ class WorkerRepository extends BaseRepository implements WorkerInterface
      */
     public function orders(Worker $worker)
     {
-        return $worker->orders()->with(['user','plan'])->latest()->simplePaginate();
+        return app(WorkerUserRepository::class)->applyFilter($worker->orders()->with(['user','plan'])->latest()->when($this->request->has('today'), function ($q, $v) {
+            $q->whereDate('created_at',today());
+        })->getQuery())->simplePaginate();
     }
 
     /**

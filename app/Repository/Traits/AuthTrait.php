@@ -7,7 +7,7 @@ trait AuthTrait
     public function login(string $phone, string $password): bool|array
     {
 //        dd(compact('phone','password'));
-        if ((!$user = $this->model->query()->firstWhere('phone', $phone)) || !$user->checkPassword($password)) {
+        if ((!$user = $this->model->query()->firstWhere('phone', $phone)) || !$user->checkPassword($password) || !$user->status) {
             return false;
         }
         $token = $user->createToken(request()->ip());

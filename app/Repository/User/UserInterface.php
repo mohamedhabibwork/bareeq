@@ -45,4 +45,8 @@ interface UserInterface
 
     public function rateOrder(WorkerUser $order, int $rate);
 
+    public function generateOTPCode(User $user);
+
+    public function resetPassword(User $user, string $password);
+
 }

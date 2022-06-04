@@ -83,4 +83,7 @@ return [
   'email_verified_at' => 'تم التحقق من البريد الإلكتروني في',
   'lat' => 'خط العرض',
   'lng' => 'ضعيف',
+  'otp_code' => 'كود OPT',
+  'request_today' => 'اطلب اليوم',
+  'no_requests_available_today' => 'لا توجد طلبات متاحة اليوم',
 ];

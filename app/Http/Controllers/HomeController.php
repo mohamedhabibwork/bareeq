@@ -32,10 +32,13 @@ class HomeController extends Controller
     public function index(Request $request, WorkerOrderChart $chart)
     {
         $wish_day = $request->get('wish_day', date('l'));
+        // get users has wish today
         $users = $this->repository->getDayUsers($wish_day);
-        $orders = app(SingleRequestRepository::class)->getDayOrders();
-//        dd(compact('users','orders'));
+        // get single requests
+        $requests = app(SingleRequestRepository::class)->getDayOrders();
+        // orders
+        $orders = app(WorkerUserRepository::class)->getDayOrders($request->date('date'));
         $chart = $chart->build();
-        return view('home', compact('users', 'orders', 'chart'));
+        return view('home', compact('users', 'requests','orders', 'chart'));
     }
 }

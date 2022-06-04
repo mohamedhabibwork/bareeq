@@ -100,10 +100,10 @@
                         </p>
                     </a>
                 </li>
-                <li class="nav-item border-dark border-1">
+                <li class="nav-item border-dark border-1 mt-5">
                     <form action="{{ route('dashboard.logout') }}" class=" nav-link" method="post">
                         @csrf
-                        <button type="submit" class="btn btn-sm btn-block">
+                        <button type="submit" class="btn btn-sm btn-danger btn-block">
                             <i class="nav-icon fas fa-user"></i>
                             <p>
                                 {{ __('main.logout') }}

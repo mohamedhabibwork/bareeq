@@ -4,6 +4,7 @@ namespace App\Repository\WorkerUser;
 
 use App\DataTables\Dashboard\WorkerUserDatatable;
 use App\Events\Orders\OrderCreatedEvent;
+use App\Models\Plan;
 use App\Models\WorkerUser;
 use App\Repository\BaseRepository;
 use Illuminate\Database\Eloquent\Collection;
@@ -15,7 +16,7 @@ use Yajra\DataTables\Services\DataTable;
  */
 class WorkerUserRepository extends BaseRepository implements WorkerUserInterface
 {
-    protected array $filters = [];
+    protected array $filters = ['order_status#in'];
 
     /**
      * @param WorkerUser $model
@@ -48,7 +49,7 @@ class WorkerUserRepository extends BaseRepository implements WorkerUserInterface
     public function store(array $data): WorkerUser|bool
     {
         // changes something
-
+        $data['plan_type'] ??= Plan::class;
         if (!$saved = $this->model->create($data)) {
             return false;
         }
@@ -69,7 +70,7 @@ class WorkerUserRepository extends BaseRepository implements WorkerUserInterface
     }
 
     /**
-     * @param int|WorkerUser $model
+     * @param int|array|WorkerUser $model
      * @param callable|null $callable
      * @param bool $deleted
      * @return WorkerUser|Collection|null
@@ -170,7 +171,7 @@ class WorkerUserRepository extends BaseRepository implements WorkerUserInterface
      * @param string|null $date
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function getDayOrders(?string $date = null)
+    public function getDayOrders($date = null)
     {
         return $this->applyFilter($this->model->whereNull('worker_id')->whereDate('created_at', $date ?? today())->with('user'))->paginate();
     }
