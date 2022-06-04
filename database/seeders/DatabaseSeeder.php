@@ -49,7 +49,8 @@ class DatabaseSeeder extends Seeder
             ->create([
                 'name' => 'admin',
                 'phone' => '01098989297',
-                'password' => '123456789'
+                'password' => '123456789',
+                'status' => true,
             ]);
 
         WorkerUser::factory(rand(20, 50))->set('user_id', $user->id)->set('worker_id', null)->create();
