@@ -37,5 +37,5 @@ interface WorkerUserInterface
 
     public function deletedOnly(): array|LengthAwarePaginator;
 
-    public function getDayOrders(?string $date = null);
+    public function getDayOrders($date = null);
 }
