@@ -40,5 +40,5 @@ interface WorkerInterface
 
     public function orders(Worker $worker);
 
-    public function finishOrder(Worker $worker, WorkerUser $order, array $before_images);
+    public function finishOrder(Worker $worker, WorkerUser $order, array $after_images);
 }
