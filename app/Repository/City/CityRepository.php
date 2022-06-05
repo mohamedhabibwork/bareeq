@@ -120,11 +120,11 @@ class CityRepository extends BaseRepository implements CityInterface
     }
 
     /**
-     * @return \App\DataTables\Dashboard\CityDatatable|DataTable
+     * @return \App\DataTables\Dashboard\CityDataTable|DataTable
      */
-    public function datatable(): \App\DataTables\Dashboard\CityDatatable|DataTable
+    public function datatable(): \App\DataTables\Dashboard\CityDataTable|DataTable
     {
-        return app(\App\DataTables\Dashboard\CityDatatable::class);
+        return app(\App\DataTables\Dashboard\CityDataTable::class);
     }
 
     /**

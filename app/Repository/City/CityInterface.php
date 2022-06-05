@@ -17,7 +17,7 @@ interface CityInterface
     public function delete(int|\App\Models\City $model): \App\Models\City|bool;
     public function forceDelete(int|\App\Models\City $model): \App\Models\City|bool;
     public function restore(int|\App\Models\City $model): \App\Models\City|bool;
-    public function datatable(): \App\DataTables\Dashboard\CityDatatable|DataTable;
+    public function datatable(): \App\DataTables\Dashboard\CityDataTable|DataTable;
     public function toggleStatus(int|\App\Models\City $model, bool $status = false): bool;
     public function update(int|\App\Models\City $model, array $data): \App\Models\City|bool;
     public function deletedOnly(): array|\Illuminate\Pagination\LengthAwarePaginator;
