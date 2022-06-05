@@ -87,4 +87,7 @@ return array(
     'otp_code' => 'OPT Code',
     'request_today' => 'Request Today',
     'no_requests_available_today' => 'No Requests Available Today',
+    'cities' => 'Cities',
+    'city' => 'City',
+    'city_name' => 'City Name',
 );

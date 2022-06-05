@@ -24,6 +24,7 @@ class UpdateUserRequest extends FormRequest
         return [
             'phone' => ['sometimes', 'required', 'unique:users,phone,' . $this->route('id'), 'min:10', 'max:13', 'starts_with:01'],
             'name' => ['sometimes', 'required', 'string', 'min:3'],
+            'city_id' => ['sometimes','required', 'numeric', 'exists:cities,id'],
             'password' => ['sometimes', 'required', 'min:6', 'confirmed'],
             'start_time' => ['sometimes', 'required', 'date_format:H:i'],
             'end_time' => ['sometimes', 'required', 'date_format:H:i', 'after_or_equal:start_time'],

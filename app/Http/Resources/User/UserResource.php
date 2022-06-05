@@ -3,6 +3,7 @@
 namespace App\Http\Resources\User;
 
 use App\Http\Resources\Car\CarResource;
+use App\Http\Resources\City\CityResource;
 use App\Http\Resources\Plan\PlanResource;
 use App\Http\Resources\SingleRequest\SingleRequestResource;
 use App\Models\User;
@@ -38,6 +39,7 @@ class UserResource extends JsonResource
             'wishing_count_sum' => $this->wishing_count_sum ?? new MissingValue(),
             'plans_sum_wishing_count' => $this->plans_sum_wishing_count ?? new MissingValue(),
             'car' => new CarResource($this->whenLoaded('car')),
+            'city' => new CityResource($this->whenLoaded('city')),
             'plans' => PlanResource::collection($this->whenLoaded('plans')),
         ];
     }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\CityController;
 use App\Http\Controllers\Api\PlanController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WorkerController;
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'users'], function () {
     Route::post('/login', [UserController::class, 'login'])->middleware(['guest:users']);
     Route::post('/register', [UserController::class, 'store'])->middleware(['guest:users']);
+    Route::get('/cities', [CityController::class, 'index']);
     Route::group(['middleware' => 'auth:users',], function () {
         Route::get('best/plans', [PlanController::class, 'index']);
         Route::get('plans', [PlanController::class, 'index']);
@@ -24,11 +26,11 @@ Route::group(['prefix' => 'users'], function () {
         Route::get('requests', [UserController::class, 'singles']);
         Route::post('requests', [UserController::class, 'createSingleRequest']);
 
-        Route::post('otp/code', [UserController::class, 'generateOTPCode']);
-        Route::post('otp/verify', [UserController::class, 'verifyOTPCode']);
+        Route::post('otp/code', [UserController::class, 'generateOTPCode'])->middleware('throttle:2');
+        Route::post('otp/verify', [UserController::class, 'verifyOTPCode'])->middleware('throttle:2');
 
-        Route::post('reset/code', [UserController::class, 'generateOTPCode']);
-        Route::post('reset/password', [UserController::class, 'resetPassword']);
+        Route::post('reset/code', [UserController::class, 'generateOTPCode'])->middleware('throttle:2');
+        Route::post('reset/password', [UserController::class, 'resetPassword'])->middleware('throttle:2');
 
     });
 });

@@ -26,3 +26,5 @@ $this->app->bind(PlanInterface::class, PlanRepository::class);
 $this->app->bind(SingleRequestInterface::class, SingleRequestRepository::class);
 $this->app->bind(UserPlanInterface::class, UserPlanRepository::class);
 $this->app->bind(WorkerUserInterface::class, WorkerUserRepository::class);
+
+$this->app->bind(\App\Repository\City\CityInterface::class,\App\Repository\City\CityRepository::class);

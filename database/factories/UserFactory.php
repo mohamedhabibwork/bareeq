@@ -2,11 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\City;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends Factory
  */
 class UserFactory extends Factory
 {
@@ -23,10 +25,11 @@ class UserFactory extends Factory
             'phone_verified_at' => now(),
             'password' => '123456789', // password
             'remember_token' => Str::random(10),
-            'start_time'=>$this->faker->time('H:i'),
-            'end_time'=>$this->faker->time('H:i'),
-            'wish_day'=>$this->faker->dayOfWeek(),
-            'status'=>$this->faker->boolean(),
+            'start_time' => $this->faker->time('H:i'),
+            'end_time' => $this->faker->time('H:i'),
+            'wish_day' => $this->faker->dayOfWeek(),
+            'status' => $this->faker->boolean(),
+            'city_id' => City::factory(),
         ];
     }
 

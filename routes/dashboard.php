@@ -24,6 +24,10 @@ Route::group(['middleware' => 'auth:web'],function () use ($callback) {
         ->prefix('users')
         ->name('users.')->group($callback);
 
+    Route::controller('CityController')
+        ->prefix('cities')
+        ->name('cities.')->group($callback);
+
     Route::controller('AdminController')
         ->prefix('admins')
         ->name('admins.')->group($callback);

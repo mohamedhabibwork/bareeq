@@ -86,4 +86,7 @@ return [
   'otp_code' => 'كود OPT',
   'request_today' => 'اطلب اليوم',
   'no_requests_available_today' => 'لا توجد طلبات متاحة اليوم',
+  'cities' => 'مدن',
+  'city' => 'مدينة',
+  'city_name' => 'اسم المدينة',
 ];

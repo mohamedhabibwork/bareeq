@@ -2,37 +2,35 @@
 
 namespace App\DataTables\Dashboard;
 
-use App\Models\Worker;
+use App\Models\City;
 use Yajra\DataTables\DataTableAbstract;
 use Yajra\DataTables\Html\Builder;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Services\DataTable;
 
-class WorkerDatatable extends DataTable
+class CityDataTable extends DataTable
 {
     /**
      * Build DataTable class.
      *
      * @param mixed $query Results from query() method.
      * @return DataTableAbstract
-     * @throws \Yajra\DataTables\Exceptions\Exception
      */
     public function dataTable($query)
     {
         return datatables()
             ->eloquent($query)
-            ->editColumn('created_at',fn($model)=>$model->created_at->format('Y-m-d'))
-            ->addColumn('action', 'dashboard::worker.action');
+            ->addColumn('action', 'dashboard::city.action');
     }
 
     /**
      * Get query source of dataTable.
      *
-     * @param Worker $model
+     * @param City $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function query(Worker $model)
+    public function query(City $model)
     {
         return $model->newQuery();
     }
@@ -45,15 +43,15 @@ class WorkerDatatable extends DataTable
     public function html()
     {
         return $this->builder()
-            ->setTableId('workerdatatable-table')
+            ->setTableId('citydatatable-table')
+            ->addTableClass(['text-center'])
             ->columns($this->getColumns())
-            ->minifiedAjax(route('dashboard.workers.datatable'))
+            ->minifiedAjax(route('dashboard.cities.datatable'))
             ->dom('Bfrtip')
-            ->orderBy(0)
-            ->language(fileLangDatatable())
+            ->orderBy(1)
             ->buttons(
-                Button::make('create')->action('window.location = "' . route('dashboard.workers.create') . '";')->text(__('main.create')),
-                Button::make('colvis'),Button::make('print')->text(__('main.print')),
+                Button::make('create')->action('window.location = "' . route('dashboard.cities.create') . '";')->text(__('main.create')),
+                Button::make('colvis'), Button::make('print')->text(__('main.print')),
                 Button::make('reset')->text(__('main.reset')),
                 Button::make('reload')->text(__('main.reload')),
             );
@@ -67,12 +65,9 @@ class WorkerDatatable extends DataTable
     protected function getColumns()
     {
         return [
-            Column::make('id')->title(__('main.id')),
-            Column::make('name')->title(__('main.name')),
-            Column::make('phone')->title(__('main.phone')),
-            Column::make('created_at')->title(__('main.created_at')),
+            Column::make('name'),
+
             Column::computed('action')
-                ->title(__('main.action'))
                 ->exportable(false)
                 ->printable(false)
                 ->width(60)
@@ -87,6 +82,6 @@ class WorkerDatatable extends DataTable
      */
     protected function filename(): string
     {
-        return 'Worker_' . date('YmdHis');
+        return 'City_' . date('YmdHis');
     }
 }

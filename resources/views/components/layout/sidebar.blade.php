@@ -64,6 +64,16 @@
                 </li>
 
                 <li class="nav-item">
+                    <a href="{{ route('dashboard.cities.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-th"></i>
+                        <p>
+                            {{ __('main.cities') }}
+                            <span class="right badge badge-danger">New</span>
+                        </p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
                     <a href="{{ route('dashboard.admins.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-th"></i>
                         <p>
@@ -118,4 +128,5 @@
     </div>
     <!-- /.sidebar -->
 </aside>
+
 

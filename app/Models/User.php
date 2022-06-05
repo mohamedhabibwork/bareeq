@@ -28,6 +28,7 @@ class User extends BaseAuth
         'end_time',
         'lat',
         'lng',
+        'city_id',
         'otp_code',
     ];
 
@@ -110,4 +111,11 @@ class User extends BaseAuth
         return $this->orders_count < $plan->wishing_count;
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function city()
+    {
+        return $this->belongsTo(City::class, 'city_id');
+    }
 }

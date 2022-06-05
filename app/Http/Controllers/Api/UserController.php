@@ -79,7 +79,7 @@ class UserController extends Controller
     public function show(Request $request)
     {
         $user = $request->user();
-        $user->loadMissing(['plans', 'car']);
+        $user->loadMissing(['plans', 'car','city']);
         $user->loadCount('order_in_plan');
         $user->loadSum('plans', 'wishing_count');
         $user->withCasts(['plans_sum_wishing_count' => 'integer']);

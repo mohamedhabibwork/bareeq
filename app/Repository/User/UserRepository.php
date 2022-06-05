@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\Worker;
 use App\Models\WorkerUser;
 use App\Repository\BaseRepository;
+use App\Repository\SingleRequest\SingleRequestRepository;
 use App\Repository\Traits\AuthTrait;
 use DB;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -238,7 +239,7 @@ class UserRepository extends BaseRepository implements UserInterface
      */
     public function singles(User $user)
     {
-        return $user->single_requests()->simplePaginate();
+        return app(SingleRequestRepository::class)->applyFilter($user->single_requests()->getQuery())->simplePaginate();
     }
 
     /**
@@ -293,7 +294,7 @@ class UserRepository extends BaseRepository implements UserInterface
     /**
      * @param User $user
      * @param string $password
-     * @return mixed
+     * @return bool
      */
     public function resetPassword(User $user, string $password)
     {

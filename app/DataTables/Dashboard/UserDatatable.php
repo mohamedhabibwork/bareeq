@@ -35,7 +35,7 @@ class UserDatatable extends DataTable
      */
     public function query(User $model)
     {
-        return $model->newQuery();
+        return $model->newQuery()->with('city');
     }
 
     /**
@@ -48,6 +48,7 @@ class UserDatatable extends DataTable
         return $this->builder()
             ->setTableId('userdatatable-table')
             ->columns($this->getColumns())
+            ->setTableAttributes(['class'=>'w-100 table dataTable '])
             ->minifiedAjax(route('dashboard.users.datatable'))
             ->dom('Bfrtip')
             ->orderBy(0)
@@ -78,6 +79,7 @@ class UserDatatable extends DataTable
         return [
             Column::make('id')->title(__('main.id')),
             Column::make('name')->title(__('main.name')),
+            Column::make('city.name','city.name')->title(__('main.city_name')),
             Column::make('phone')->title(__('main.phone')),
 //            Column::make('phone_verified_at'),
             Column::make('created_at')->title(__('main.created_at')),

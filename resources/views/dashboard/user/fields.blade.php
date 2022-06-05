@@ -38,6 +38,11 @@
     {{ Form::label(__('main.password_confirmation'), null, ['class' => 'control-label']) }}
     {{ Form::password('password_confirmation', array_merge(['class' => 'form-control  '.($errors->has('password') ? 'is-invalid' : '')],[])) }}
 </div>
+<div class="form-group">
+    {{ Form::label(__('main.city_id'), null, ['class' => 'control-label']) }}
+    {{ Form::select('city_id',\App\Models\City::pluck('name','id')->toArray(),null, array_merge(['class' => 'form-control  '.($errors->has('city_id') ? 'is-invalid' : '')],['disabled'=>true,])) }}
+    <x-dashboard.error name="city_id"/>
+</div>
 
 <div class="form-group">
     {!! Form::hidden('status', 0, ['class' => 'form-check-input']) !!}
