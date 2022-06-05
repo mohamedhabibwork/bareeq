@@ -90,7 +90,7 @@ class WorkerUserController extends Controller
         if (!$order = $this->repository->find($id))
             return ApiResponse::notFound();
 
-        if ($request->user()->id !== $order->worker_id)
+        if ($request->user()->id != $order->worker_id)
             return ApiResponse::error(__('main.order not available for you'), code: 403);
 
         $validated['order_status'] = WorkerUser::ORDER_STATUS['progress'];

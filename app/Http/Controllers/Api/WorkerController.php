@@ -120,13 +120,13 @@ class WorkerController extends Controller
             return ApiResponse::notFound();
         }
 
-        if ($request->user()->id !== $order->worker_id) {
+        if ($request->user()->id != $order->worker_id) {
             return ApiResponse::error(__('main.order not available for you'), code: 403);
         }
 
-        if ($order->order_status ==WorkerUser::ORDER_STATUS['success']) return ApiResponse::error(__('main.order has finish'));
+        if ($order->order_status == WorkerUser::ORDER_STATUS['success']) return ApiResponse::error(__('main.order has finish'));
 
-        if ($order->order_status !== WorkerUser::ORDER_STATUS['progress'])
+        if ($order->order_status != WorkerUser::ORDER_STATUS['progress'])
             return ApiResponse::error(__('main.order not started yet'));
 
         $images = $request->validate(['after_images' => ['required', 'array'], 'after_images.*' => ['required', 'image']])['after_images'];
