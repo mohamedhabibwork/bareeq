@@ -66,8 +66,9 @@ class UserController extends Controller
         if (!$user = $this->repository->store($validated)) {
             return ApiResponse::error(__('main.store_fail', ['model' => __('main.user')]));
         }
+           $token = $user['token']->plainTextToken;
         event(new Registered($user));
-        return new UserResource($user);
+         return (new UserResource($user))->additional(compact('token'));
     }
 
     /**

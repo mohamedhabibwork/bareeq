@@ -22,7 +22,7 @@ class StoreUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'phone' => ['required', 'string', 'unique:users,phone', 'min:10', 'max:13', 'starts_with:01'],
+            'phone' => ['sometimes', 'required', 'string', 'unique:users,phone', 'min:10', 'max:13', 'starts_with:01'],
             'name' => ['required', 'string', 'min:3'],
             'city_id' => ['sometimes','required', 'numeric', 'exists:cities,id'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
