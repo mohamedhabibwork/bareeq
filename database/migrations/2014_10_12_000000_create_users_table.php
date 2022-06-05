@@ -25,7 +25,7 @@ return new class extends Migration {
             $table->string('end_time')->nullable();
             $table->string('lat')->nullable();
             $table->string('lng')->nullable();
-            $table->foreignIdFor(\App\Models\City::class,'city_id');
+            $table->foreignIdFor(\App\Models\City::class,'city_id')->nullable();
             $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();

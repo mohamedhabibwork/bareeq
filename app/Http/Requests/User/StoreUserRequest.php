@@ -11,7 +11,7 @@ class StoreUserRequest extends FormRequest
     use RequestMethods;
 
     protected array $filesKeys = [];
-    protected array $forgetIfNull = ['start_time', 'end_time', 'lat', 'lng'];
+    protected array $forgetIfNull = ['start_time', 'end_time', 'lat', 'lng','city_id'];
     protected array $encryption = [];
 
     /**
@@ -24,7 +24,7 @@ class StoreUserRequest extends FormRequest
         return [
             'phone' => ['required', 'string', 'unique:users,phone', 'min:10', 'max:13', 'starts_with:01'],
             'name' => ['required', 'string', 'min:3'],
-            'city_id' => ['required', 'numeric', 'exists:cities,id'],
+            'city_id' => ['sometimes','required', 'numeric', 'exists:cities,id'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
             'start_time' => ['sometimes', 'required', 'date_format:H:i'],
             'end_time' => ['sometimes', 'required', 'date_format:H:i', 'after_or_equal:start_time'],
