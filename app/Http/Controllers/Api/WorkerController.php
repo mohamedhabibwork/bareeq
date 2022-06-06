@@ -16,6 +16,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Notifications\DatabaseNotificationCollection;
 
 class WorkerController extends Controller
 {
@@ -151,5 +152,14 @@ class WorkerController extends Controller
             return ApiResponse::error(__('main.password_not_changed', ['model' => __('main.user')]));
         }
         return ApiResponse::success(__('main.password_changed'));
+    }
+
+    /**
+     * @param Request $request
+     * @return DatabaseNotificationCollection
+     */
+    public function notifications(Request $request)
+    {
+        return new DatabaseNotificationCollection($this->repository->notifications($request->user()));
     }
 }

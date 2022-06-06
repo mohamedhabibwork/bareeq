@@ -9,6 +9,7 @@ use App\Repository\BaseRepository;
 use App\Repository\Traits\AuthTrait;
 use App\Repository\WorkerUser\WorkerUserRepository;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Yajra\DataTables\Services\DataTable;
@@ -195,6 +196,15 @@ class WorkerRepository extends BaseRepository implements WorkerInterface
     {
         $order_status = WorkerUser::ORDER_STATUS['success'];
         return $order->update(compact('after_images', 'order_status'));
+    }
+
+    /**
+     * @param Worker $worker
+     * @return Paginator|DatabaseNotification[]
+     */
+    public function notifications(Worker $worker)
+    {
+        return $worker->notifications()->simplePaginate();
     }
 
 }

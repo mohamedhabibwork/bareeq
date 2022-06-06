@@ -41,4 +41,6 @@ interface WorkerInterface
     public function orders(Worker $worker);
 
     public function finishOrder(Worker $worker, WorkerUser $order, array $after_images);
+    public function notifications(Worker $worker);
+
 }

@@ -19,5 +19,6 @@ Route::group(['prefix' => 'workers'], function () {
         Route::get('worker', [WorkerController::class, 'show']);
         Route::post('worker/update', [WorkerController::class, 'update']);
         Route::post('change/password', [WorkerController::class, 'changePassword']);
+        Route::get('notifications', [WorkerController::class, 'notifications']);
     });
 });
