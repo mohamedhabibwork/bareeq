@@ -19,6 +19,7 @@ use DB;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Validation\Rule;
@@ -35,6 +36,14 @@ class UserController extends Controller
         $this->repository = $repository;
     }
 
+    public function checkArea(Request $request)
+    {
+        $request->validate(['lat' => ['required', 'numeric'], 'lng' => ['required', 'numeric']]);
+        if ($request->boolean('not_match')) {
+            return ApiResponse::error('not in area');
+        }
+        return ApiResponse::success('success');
+    }
 
     /**
      * @param Request $request
@@ -66,9 +75,9 @@ class UserController extends Controller
         if (!$user = $this->repository->store($validated)) {
             return ApiResponse::error(__('main.store_fail', ['model' => __('main.user')]));
         }
-           $token = $user['token']->plainTextToken;
+        $token = $user['token']->plainTextToken;
         event(new Registered($user));
-         return (new UserResource($user))->additional(compact('token'));
+        return (new UserResource($user))->additional(compact('token'));
     }
 
     /**
@@ -80,7 +89,7 @@ class UserController extends Controller
     public function show(Request $request)
     {
         $user = $request->user();
-        $user->loadMissing(['plans', 'car','city']);
+        $user->loadMissing(['plans', 'car', 'city']);
         $user->loadCount('order_in_plan');
         $user->loadSum('plans', 'wishing_count');
         $user->withCasts(['plans_sum_wishing_count' => 'integer']);
@@ -107,7 +116,7 @@ class UserController extends Controller
 
     /**
      * @param Request $request
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     * @return AnonymousResourceCollection
      */
     public function orders(Request $request)
     {
@@ -146,7 +155,7 @@ class UserController extends Controller
 
     /**
      * @param Request $request
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     * @return AnonymousResourceCollection
      */
     public function singles(Request $request)
     {
@@ -277,10 +286,36 @@ class UserController extends Controller
      */
     public function generateOTPCode(Request $request)
     {
-        if (!$user = $this->repository->generateOTPCode($request->user())) {
+        if (!$user = $request->user() ?? $this->repository->findByPhone($request->get('phone',''))) {
+            return ApiResponse::notFound();
+        }
+
+        if (!$this->repository->generateOTPCode($user)) {
             return ApiResponse::error(__('main.update_fail', ['model' => __('main.user')]));
         }
         return ApiResponse::success(__('main.code_send'));
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function resetPassword(Request $request)
+    {
+        $request->validate(['code' => ['required', 'string', 'size:4'], 'password' => ['required', 'string', 'min:6', 'confirmed'], 'phone' => ['required', 'string', 'exists:users,phone']]);
+
+        if (!$user = $this->repository->findByPhone($request->get('phone'))) {
+            return ApiResponse::notFound();
+        }
+
+        if (!$this->repository->verifyOTPCode($user, $request->get('code'))) {
+            return ApiResponse::error(__('main.not_verify', ['model' => __('main.user')]));
+        }
+
+        if (!$this->repository->resetPassword($request->user(), $request->get('password'))) {
+            return ApiResponse::error(__('main.not_reset', ['model' => __('main.user')]));
+        }
+        return ApiResponse::success(__('main.reset'));
     }
 
     /**
@@ -294,21 +329,5 @@ class UserController extends Controller
             return ApiResponse::error(__('main.not_verify', ['model' => __('main.user')]));
         }
         return ApiResponse::success(__('main.verified'));
-    }
-
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function resetPassword(Request $request)
-    {
-        $request->validate(['code' => ['required', 'string', 'size:4'],'password'=>['required','string','min:6','confirmed']]);
-        if (!$this->repository->verifyOTPCode($request->user(), $request->get('code'))) {
-            return ApiResponse::error(__('main.not_verify', ['model' => __('main.user')]));
-        }
-        if (!$this->repository->resetPassword($request->user(), $request->get('password'))) {
-            return ApiResponse::error(__('main.not_reset', ['model' => __('main.user')]));
-        }
-        return ApiResponse::success(__('main.reset'));
     }
 }

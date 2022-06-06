@@ -14,6 +14,7 @@ Route::group(['prefix' => 'users'], function () {
     Route::group(['middleware' => 'auth:users',], function () {
         Route::get('best/plans', [PlanController::class, 'index']);
         Route::get('plans', [PlanController::class, 'index']);
+        Route::post('/checkArea', [UserController::class, 'checkArea']);
         Route::post('/car', [UserController::class, 'attachCar']);
         Route::post('subscribe/plan', [UserController::class, 'subscribe']);
         Route::get('user', [UserController::class, 'show']);
@@ -29,8 +30,8 @@ Route::group(['prefix' => 'users'], function () {
         Route::post('otp/code', [UserController::class, 'generateOTPCode'])->middleware('throttle:2');
         Route::post('otp/verify', [UserController::class, 'verifyOTPCode'])->middleware('throttle:2');
 
-        Route::post('reset/code', [UserController::class, 'generateOTPCode'])->middleware('throttle:2');
-        Route::post('reset/password', [UserController::class, 'resetPassword'])->middleware('throttle:2');
+        Route::post('reset/code', [UserController::class, 'generateOTPCode'])->middleware('throttle:2')->withoutMiddleware('auth:users');
+        Route::post('reset/password', [UserController::class, 'resetPassword'])->middleware('throttle:2')->withoutMiddleware('auth:users');
 
     });
 });

@@ -298,7 +298,16 @@ class UserRepository extends BaseRepository implements UserInterface
      */
     public function resetPassword(User $user, string $password)
     {
-        return $user->update(compact('password') + ['otp_code' => null]);
+        return $user->update(compact('password') + ['otp_code' => null, 'phone_verified_at' => now()]);
+    }
+
+    /**
+     * @param string $phone
+     * @return User|null
+     */
+    public function findByPhone(string $phone): ?User
+    {
+        return $this->model->firstWhere(['phone' => $phone]);
     }
 
 

@@ -31,11 +31,11 @@ class ApiResponse
     }
 
     /**
-     * @return never
+     * @return JsonResponse
      */
-    public static function notFound()
+    public static function notFound(?string $message = null): JsonResponse
     {
-        return abort(404, 'Element');
+        return response()->json(['status' => false, 'message' => $message ?? __('main.not_found')], 404);
     }
 
 }

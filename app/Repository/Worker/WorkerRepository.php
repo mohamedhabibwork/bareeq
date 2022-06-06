@@ -3,7 +3,6 @@
 namespace App\Repository\Worker;
 
 use App\DataTables\Dashboard\WorkerDatatable;
-use App\Models\User;
 use App\Models\Worker;
 use App\Models\WorkerUser;
 use App\Repository\BaseRepository;
@@ -12,7 +11,6 @@ use App\Repository\WorkerUser\WorkerUserRepository;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
-use LaravelIdea\Helper\App\Models\_IH_WorkerUser_C;
 use Yajra\DataTables\Services\DataTable;
 
 /**
@@ -179,9 +177,12 @@ class WorkerRepository extends BaseRepository implements WorkerInterface
      */
     public function orders(Worker $worker)
     {
-        return app(WorkerUserRepository::class)->applyFilter($worker->orders()->with(['user','plan'])->latest()->when($this->request->has('today'), function ($q, $v) {
-            $q->whereDate('created_at',today());
-        })->getQuery())->simplePaginate();
+        return app(WorkerUserRepository::class)
+            ->applyFilter($worker->orders()->with(['user.car', 'plan'])
+                ->latest()
+                ->when($this->request->has('today'), fn($q, $v) => $q->whereDate('created_at', today()))
+                ->getQuery())
+            ->simplePaginate();
     }
 
     /**

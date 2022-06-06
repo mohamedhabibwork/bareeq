@@ -14,7 +14,7 @@ use Yajra\DataTables\Services\DataTable;
  */
 class PlanRepository extends BaseRepository implements PlanInterface
 {
-    protected array $filters = [];
+    protected array $filters = ['type#in'];
 
     /**
      * @param Plan $model

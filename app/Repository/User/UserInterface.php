@@ -49,4 +49,6 @@ interface UserInterface
 
     public function resetPassword(User $user, string $password);
 
+    public function findByPhone(string $phone):?User;
+
 }
