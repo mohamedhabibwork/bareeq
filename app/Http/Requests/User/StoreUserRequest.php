@@ -24,6 +24,7 @@ class StoreUserRequest extends FormRequest
         return [
             'phone' => ['sometimes', 'required', 'string', 'unique:users,phone', 'min:10', 'max:13', 'starts_with:01'],
             'name' => ['required', 'string', 'min:3'],
+            'address' => ['required', 'string'],
             'city_id' => ['sometimes','required', 'numeric', 'exists:cities,id'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
             'start_time' => ['sometimes', 'required', 'date_format:H:i'],

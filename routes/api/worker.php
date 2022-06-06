@@ -18,6 +18,6 @@ Route::group(['prefix' => 'workers'], function () {
         Route::post('orders/{id}', [WorkerController::class, 'finishOrder']);
         Route::get('worker', [WorkerController::class, 'show']);
         Route::post('worker/update', [WorkerController::class, 'update']);
-
+        Route::post('change/password', [WorkerController::class, 'changePassword']);
     });
 });

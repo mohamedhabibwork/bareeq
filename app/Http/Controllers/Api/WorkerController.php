@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\Orders\OrderHasFinishedEvent;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Worker\StoreWorkerRequest;
@@ -133,6 +134,22 @@ class WorkerController extends Controller
         if (!$this->repository->finishOrder($request->user(), $order, $images)) {
             return ApiResponse::error(__('main.order not finish'));
         }
+        event(new OrderHasFinishedEvent($order));
         return ApiResponse::success(__('main.order has finish'));
+    }
+
+
+    public function changePassword(Request $request)
+    {
+        $request->validate(['current_password' => ['required', 'string'], 'password' => ['required', 'string', 'min:6']]);
+
+        if (!\Hash::check($request->get('current_password'), $request->user()->getAuthPassword())) {
+            return ApiResponse::error(__('main.not_match_password', ['model' => __('main.user')]));
+        }
+
+        if (!$this->repository->update($request->user(), ['password' => $request->get('password')])) {
+            return ApiResponse::error(__('main.password_not_changed', ['model' => __('main.user')]));
+        }
+        return ApiResponse::success(__('main.password_changed'));
     }
 }

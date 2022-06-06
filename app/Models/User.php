@@ -30,6 +30,7 @@ class User extends BaseAuth
         'lng',
         'city_id',
         'otp_code',
+        'address',
     ];
 
     /**

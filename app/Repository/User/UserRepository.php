@@ -225,12 +225,13 @@ class UserRepository extends BaseRepository implements UserInterface
     /**
      * @param User $user
      * @param int|Plan $plan_id
-     * @return array
+     * @return bool
      */
     public function subscribe(User $user, Plan|int $plan_id)
     {
         $plan = $plan_id instanceof Plan ? $plan_id->id : $plan_id;
-        return $user->plans()->syncWithoutDetaching([$plan]);
+        $user->plans()->attach([$plan]);
+        return true;
     }
 
     /**

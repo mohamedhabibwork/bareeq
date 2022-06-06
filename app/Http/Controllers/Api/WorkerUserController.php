@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\Orders\OrderHasStartedEvent;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\WorkerUser\StoreWorkerUserRequest;
@@ -97,7 +98,7 @@ class WorkerUserController extends Controller
 
         if (!$this->repository->update($order, $validated))
             return ApiResponse::error(__('main.start_fail', ['model' => __('main.workerUser')]));
-
+        event(new OrderHasStartedEvent($order));
         return ApiResponse::success(__('main.started_success', ['model' => __('main.workerUser')]));
     }
 

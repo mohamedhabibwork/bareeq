@@ -29,6 +29,12 @@
 </div>
 
 <div class="form-group">
+    {{ Form::label(__('main.address'), null, ['class' => 'control-label']) }}
+    {{ Form::textarea('address', old('address'), array_merge(['class' => 'form-control  '.($errors->has('address') ? 'is-invalid' : '')],['required'=>true])) }}
+    <x-dashboard.error name="address"/>
+</div>
+
+<div class="form-group">
     {{ Form::label(__('main.password'), null, ['class' => 'control-label']) }}
     {{ Form::password('password', array_merge(['class' => 'form-control  '.($errors->has('password') ? 'is-invalid' : '')],[])) }}
     <x-dashboard.error name="password"/>

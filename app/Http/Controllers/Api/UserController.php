@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\Orders\OrderAcceptedEvent;
+use App\Events\Orders\OrderRatedEvent;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Car\StoreCarRequest;
@@ -13,9 +15,11 @@ use App\Http\Resources\SingleRequest\SingleRequestResource;
 use App\Http\Resources\User\UserResource;
 use App\Http\Resources\WorkerUser\WorkerUserResource;
 use App\Models\WorkerUser;
+use App\Notifications\Orders\OrderCreatedNotification;
 use App\Repository\User\UserInterface;
 use App\Repository\WorkerUser\WorkerUserInterface;
 use DB;
+use Hash;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -198,7 +202,7 @@ class UserController extends Controller
         if (!$this->repository->rateOrder($order, (int)$validated['rate'])) {
             return ApiResponse::error(__('main.update_fail'));
         }
-
+        event(new OrderRatedEvent($order));
         return ApiResponse::success(__('main.rated'));
     }
 
@@ -227,7 +231,11 @@ class UserController extends Controller
             if (!$orderInterface->update($order, ['user_status' => $validated['status']]))
                 return ApiResponse::error(__('main.update_fail'));
             // if not changed
-            if ($validated['status'] != WorkerUser::USER_STATUS['changed']) return ApiResponse::success(__('main.update'));
+            if ($validated['status'] != WorkerUser::USER_STATUS['changed']) {
+                event(new OrderAcceptedEvent($order));
+
+                return ApiResponse::success(__('main.accepted'));
+            }
 
             $validated = $request->validate([
                 'start_time' => ['sometimes', 'required', 'date_format:h:i'],
@@ -237,7 +245,7 @@ class UserController extends Controller
 
             if (!$this->repository->update($request->user(), $validated))
                 return ApiResponse::error(__('main.update_fail'));
-
+            $request?->user()?->notifications()?->where('type',OrderCreatedNotification::class)?->where('data->id',$order->id)->first()?->markAsRead();
             return ApiResponse::success(__('main.update'));
         });
     }
@@ -286,7 +294,7 @@ class UserController extends Controller
      */
     public function generateOTPCode(Request $request)
     {
-        if (!$user = $request->user() ?? $this->repository->findByPhone($request->get('phone',''))) {
+        if (!$user = $request->user() ?? $this->repository->findByPhone($request->get('phone', ''))) {
             return ApiResponse::notFound();
         }
 
@@ -329,5 +337,19 @@ class UserController extends Controller
             return ApiResponse::error(__('main.not_verify', ['model' => __('main.user')]));
         }
         return ApiResponse::success(__('main.verified'));
+    }
+
+    public function changePassword(Request $request)
+    {
+        $request->validate(['current_password' => ['required', 'string'], 'password' => ['required', 'string', 'min:6']]);
+
+        if (!Hash::check($request->get('current_password'), $request->user()->getAuthPassword())) {
+            return ApiResponse::error(__('main.not_match_password', ['model' => __('main.user')]));
+        }
+
+        if (!$this->repository->update($request->user(), ['password' => $request->get('password')])) {
+            return ApiResponse::error(__('main.password_not_changed', ['model' => __('main.user')]));
+        }
+        return ApiResponse::success(__('main.password_changed'));
     }
 }

@@ -20,6 +20,7 @@ Route::group(['prefix' => 'users'], function () {
         Route::get('user', [UserController::class, 'show']);
         Route::get('notifications', [UserController::class, 'notifications']);
         Route::post('user/update', [UserController::class, 'update']);
+        Route::post('change/password', [UserController::class, 'changePassword']);
         Route::get('orders', [UserController::class, 'orders']);
         Route::post('orders', [UserController::class, 'storeOrder']);
         Route::post('rate/orders/{id}', [UserController::class, 'rateOrder']);
