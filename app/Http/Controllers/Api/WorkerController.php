@@ -12,6 +12,7 @@ use App\Http\Resources\WorkerUser\WorkerUserResource;
 use App\Models\WorkerUser;
 use App\Repository\Worker\WorkerInterface;
 use App\Repository\WorkerUser\WorkerUserInterface;
+use Hash;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -78,22 +79,6 @@ class WorkerController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param UpdateWorkerRequest $request
-     * @return JsonResponse|WorkerResource
-     */
-    public function update(UpdateWorkerRequest $request)
-    {
-        $worker = $request->user();
-        $validated = $request->validatedData();
-        if (!$worker = $this->repository->update($worker, $validated)) {
-            return ApiResponse::error(__('main.update_fail', ['model' => __('main.worker')]));
-        }
-        return new WorkerResource($worker);
-    }
-
-    /**
      * Remove the specified resource from storage.
      *
      * @param int $id
@@ -109,11 +94,6 @@ class WorkerController extends Controller
             return ApiResponse::error(__('main.delete_fail', ['model' => __('main.worker')]));
 
         return ApiResponse::success(__('main.deleted_success', ['model' => __('main.worker')]));
-    }
-
-    public function orders(Request $request)
-    {
-        return WorkerUserResource::collection($this->repository->orders($request->user()));
     }
 
     public function finishOrder(Request $request, int $id)
@@ -139,12 +119,11 @@ class WorkerController extends Controller
         return ApiResponse::success(__('main.order has finish'));
     }
 
-
     public function changePassword(Request $request)
     {
         $request->validate(['current_password' => ['required', 'string'], 'password' => ['required', 'string', 'min:6']]);
 
-        if (!\Hash::check($request->get('current_password'), $request->user()->getAuthPassword())) {
+        if (!Hash::check($request->get('current_password'), $request->user()->getAuthPassword())) {
             return ApiResponse::error(__('main.not_match_password', ['model' => __('main.user')]));
         }
 
@@ -155,11 +134,41 @@ class WorkerController extends Controller
     }
 
     /**
+     * Update the specified resource in storage.
+     *
+     * @param UpdateWorkerRequest $request
+     * @return JsonResponse|WorkerResource
+     */
+    public function update(UpdateWorkerRequest $request)
+    {
+        $worker = $request->user();
+        $validated = $request->validatedData();
+        if (!$worker = $this->repository->update($worker, $validated)) {
+            return ApiResponse::error(__('main.update_fail', ['model' => __('main.worker')]));
+        }
+        return new WorkerResource($worker);
+    }
+
+    /**
      * @param Request $request
      * @return DatabaseNotificationCollection
      */
     public function notifications(Request $request)
     {
         return new DatabaseNotificationCollection($this->repository->notifications($request->user()));
+    }
+
+    public function getOrder(int $id, Request $request)
+    {
+        if (!$order = $request->user()->orders()->find($id)) {
+            return ApiResponse::notFound();
+        }
+        $order->loadMissing(['user.car','plan']);
+        return new WorkerUserResource($order);
+    }
+
+    public function orders(Request $request)
+    {
+        return WorkerUserResource::collection($this->repository->orders($request->user()));
     }
 }
