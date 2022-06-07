@@ -286,8 +286,9 @@ class UserController extends Controller
      */
     public function generateOTPCode(Request $request)
     {
-        if (!$user = $request->user() ?? $this->repository->findByPhone($request->get('phone', ''))) {
-            return ApiResponse::notFound();
+        if (!$user = $request?->user()) {
+            $request->validate(['phone'=>['required','string','max:13','exists:users']]);
+            $user = $this->repository->findByPhone($request->get('phone', ''));
         }
 
         if (!$this->repository->generateOTPCode($user)) {
