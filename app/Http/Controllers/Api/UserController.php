@@ -40,14 +40,6 @@ class UserController extends Controller
         $this->repository = $repository;
     }
 
-    public function checkArea(Request $request)
-    {
-        $request->validate(['lat' => ['required', 'numeric'], 'lng' => ['required', 'numeric']]);
-        if ($request->boolean('not_match')) {
-            return ApiResponse::error('not in area');
-        }
-        return ApiResponse::success('success');
-    }
 
     /**
      * @param Request $request
@@ -80,7 +72,7 @@ class UserController extends Controller
             return ApiResponse::error(__('main.store_fail', ['model' => __('main.user')]));
         }
         $token = $user['token']->plainTextToken;
-        event(new Registered($user));
+        event(new Registered($user['user']));
         return (new UserResource($user))->additional(compact('token'));
     }
 
@@ -233,7 +225,7 @@ class UserController extends Controller
             // if not changed
             if ($validated['status'] != WorkerUser::USER_STATUS['changed']) {
                 event(new OrderAcceptedEvent($order));
-
+                $request?->user()?->notifications()?->where('type', OrderCreatedNotification::class)?->where('data->id', $order->id)->first()?->markAsRead();
                 return ApiResponse::success(__('main.accepted'));
             }
 
@@ -245,7 +237,7 @@ class UserController extends Controller
 
             if (!$this->repository->update($request->user(), $validated))
                 return ApiResponse::error(__('main.update_fail'));
-            $request?->user()?->notifications()?->where('type',OrderCreatedNotification::class)?->where('data->id',$order->id)->first()?->markAsRead();
+            $request?->user()?->notifications()?->where('type', OrderCreatedNotification::class)?->where('data->id', $order->id)->first()?->markAsRead();
             return ApiResponse::success(__('main.update'));
         });
     }
@@ -351,5 +343,15 @@ class UserController extends Controller
             return ApiResponse::error(__('main.password_not_changed', ['model' => __('main.user')]));
         }
         return ApiResponse::success(__('main.password_changed'));
+    }
+
+    public function checkOTP(Request $request)
+    {
+        $request->validate([
+            'phone' => ['required', 'string', 'exists:users'],
+            'code' => ['required', 'string', 'size:4', Rule::exists('users', 'otp_code')->where('phone', $request->get('phone'))],
+        ]);
+
+        return ApiResponse::success(__('main.otp_code_success'));
     }
 }

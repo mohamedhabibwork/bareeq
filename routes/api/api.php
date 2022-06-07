@@ -9,12 +9,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'users'], function () {
     Route::post('/login', [UserController::class, 'login'])->middleware(['guest:users']);
-    Route::post('/register', [UserController::class, 'store'])->middleware(['guest:users']);
+    Route::post('/register', [UserController::class, 'store'])->middleware(['guest:users'])->middleware('throttle:2');
     Route::get('/cities', [CityController::class, 'index']);
     Route::group(['middleware' => 'auth:users',], function () {
         Route::get('best/plans', [PlanController::class, 'index']);
         Route::get('plans', [PlanController::class, 'index']);
-        Route::post('/checkArea', [UserController::class, 'checkArea']);
+        Route::post('/checkArea', [CityController::class, 'checkArea']);
         Route::post('/car', [UserController::class, 'attachCar']);
         Route::post('subscribe/plan', [UserController::class, 'subscribe']);
         Route::get('user', [UserController::class, 'show']);
@@ -28,6 +28,7 @@ Route::group(['prefix' => 'users'], function () {
         Route::get('requests', [UserController::class, 'singles']);
         Route::post('requests', [UserController::class, 'createSingleRequest']);
 
+        Route::post('otp/check/code', [UserController::class, 'checkOTP'])->middleware('throttle:2');
         Route::post('otp/code', [UserController::class, 'generateOTPCode'])->middleware('throttle:2');
         Route::post('otp/verify', [UserController::class, 'verifyOTPCode'])->middleware('throttle:2');
 

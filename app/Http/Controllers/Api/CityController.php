@@ -8,6 +8,7 @@ use App\Http\Requests\City\StoreCityRequest;
 use App\Http\Requests\City\UpdateCityRequest;
 use App\Http\Resources\City\CityResource;
 use App\Repository\City\CityInterface;
+use Illuminate\Http\Request;
 
 class CityController extends Controller
 {
@@ -91,5 +92,19 @@ class CityController extends Controller
             return  ApiResponse::error(__('main.delete_fail',['model'=>__('main.city')]));
         }
         return  ApiResponse::success(__('main.deleted_success',['model'=>__('main.city')]));
+    }
+
+
+    public function checkArea(Request $request)
+    {
+        $validated = $request->validate([
+            'lat' => ['required', 'numeric'],
+            'lng' => ['required', 'numeric'],
+        ]);
+
+        if (!$this->repository->checkArea($validated)) {
+            return ApiResponse::error('not in area');
+        }
+        return ApiResponse::success('success');
     }
 }

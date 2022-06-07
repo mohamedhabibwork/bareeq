@@ -15,7 +15,7 @@ interface UserInterface
 {
     public function getDayUsers(?string $day = null);
 
-    public function store(array $data): User|bool;
+    public function store(array $data): array|bool;
 
     public function update(int|User $model, array $data): User|bool;
 

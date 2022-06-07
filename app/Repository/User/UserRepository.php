@@ -67,18 +67,18 @@ class UserRepository extends BaseRepository implements UserInterface
 
     /**
      * @param array $data
-     * @return User|bool
+     * @return array|bool
      */
-    public function store(array $data): User|bool
+    public function store(array $data): array|bool
     {
         // changes something
 
-        if (!$saved = $this->model->create($data)) {
+        if (!$user = $this->model->create($data)) {
             return false;
         }
-        // sync
 
-        return $saved;
+        $token = $user->createToken(request()->ip());
+        return compact('user', 'token');
     }
 
     /**

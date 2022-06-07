@@ -21,7 +21,7 @@ class StoreCityRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', 'string', 'min:3'],
+            'name' => ['required', 'string', 'min:3','unique:cities'],
             'locations' => ['required', 'string',]
         ];
     }

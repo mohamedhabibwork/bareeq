@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Repository\City;
+use App\Models\City;
 use App\Repository\BaseRepository;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -42,16 +43,17 @@ class CityRepository extends BaseRepository implements CityInterface
      */
     public function store(array $data): \App\Models\City|bool
     {
-        if ($locations  = $data['locations'] ?? null) {
-            unset($data['locations']);
-            $data['cities.locations'] = "ST_GeomFromText('{$locations}',0)";
-        }
-
-        if (!$saved = $this->model->create($data)) {
+//        if ($locations  = $data['locations'] ?? null) {
+//            $data['locations'] = "ST_GeomFromText({$locations},0)";
+//        }
+        $now = now();
+        $data['created_at'] = $now;
+        $data['updated_at'] = $now;
+        if (!$saved = \DB::insert("insert into `cities` (`name`, `locations`,`created_at`,`updated_at`) values(:name,ST_GeomFromText(:locations),:created_at,:updated_at)",$data)) {
             return false;
         }
 
-        return $saved;
+        return new City();
     }
 
     /**
@@ -167,4 +169,15 @@ class CityRepository extends BaseRepository implements CityInterface
     {
         return $this->model->onlyTrashed()->paginate();
     }
+
+    /**
+     * @param array $validated
+     * @return bool
+     */
+    public function checkArea(array $validated): bool
+    {
+        return City::selectRaw('ST_Contains(locations,Point(:lat,:lng)) as locations_valid',$validated)->whereNotNull('locations')->havingRaw('locations_valid  > 0')->exists();
+    }
+
+
 }
