@@ -184,7 +184,7 @@ class UserController extends Controller
             return ApiResponse::notFound();
         }
 
-        if ($order->user_status != WorkerUser::USER_STATUS['success'] || $order->order_status != WorkerUser::ORDER_STATUS['success'] || $order->user_id != $request->user()->id || $order->rate != null) {
+        if ($order->user_status != WorkerUser::USER_STATUS['success'] || $order->order_status != WorkerUser::ORDER_STATUS['success'] || $order->user_id != $request->user()->id) {
             return ApiResponse::error(__('main.order not available for you'), code: 403);
         }
 
