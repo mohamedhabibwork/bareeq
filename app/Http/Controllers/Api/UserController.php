@@ -72,7 +72,8 @@ class UserController extends Controller
             return ApiResponse::error(__('main.store_fail', ['model' => __('main.user')]));
         }
         $token = $user['token']->plainTextToken;
-        event(new Registered($user['user']));
+        $user = $user['user'];
+        event(new Registered($user));
         return (new UserResource($user))->additional(compact('token'));
     }
 
@@ -254,6 +255,11 @@ class UserController extends Controller
         if (!$user = $this->repository->update($request->user(), $validated)) {
             return ApiResponse::error(__('main.update_fail', ['model' => __('main.user')]));
         }
+
+        $user->loadMissing(['plans', 'car', 'city']);
+        $user->loadCount('order_in_plan');
+        $user->loadSum('plans', 'wishing_count');
+        $user->withCasts(['plans_sum_wishing_count' => 'integer']);
         return new UserResource($user);
     }
 
