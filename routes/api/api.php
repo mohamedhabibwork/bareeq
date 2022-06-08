@@ -28,7 +28,7 @@ Route::group(['prefix' => 'users'], function () {
         Route::get('requests', [UserController::class, 'singles']);
         Route::post('requests', [UserController::class, 'createSingleRequest']);
 
-        Route::post('otp/check/code', [UserController::class, 'checkOTP'])->middleware('throttle:2');
+        Route::post('otp/check/code', [UserController::class, 'checkOTP'])->middleware('throttle:2')->withoutMiddleware('auth:users');
         Route::post('otp/code', [UserController::class, 'generateOTPCode'])->middleware('throttle:2');
         Route::post('otp/verify', [UserController::class, 'verifyOTPCode'])->middleware('throttle:2');
 

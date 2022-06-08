@@ -319,7 +319,7 @@ class UserController extends Controller
             return ApiResponse::error(__('main.not_verify', ['model' => __('main.user')]));
         }
 
-        if (!$this->repository->resetPassword($request->user(), $request->get('password'))) {
+        if (!$this->repository->resetPassword($user, $request->get('password'))) {
             return ApiResponse::error(__('main.not_reset', ['model' => __('main.user')]));
         }
         return ApiResponse::success(__('main.reset'));

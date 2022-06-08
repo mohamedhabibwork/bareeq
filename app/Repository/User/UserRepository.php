@@ -308,7 +308,7 @@ class UserRepository extends BaseRepository implements UserInterface
      */
     public function findByPhone(string $phone): ?User
     {
-        return $this->model->firstWhere(['phone' => $phone]);
+        return $this->model->firstWhere('phone' , $phone);
     }
 
 
