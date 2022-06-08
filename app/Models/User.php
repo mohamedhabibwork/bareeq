@@ -31,6 +31,7 @@ class User extends BaseAuth
         'city_id',
         'otp_code',
         'address',
+        'phone_verified_at',
     ];
 
     /**
