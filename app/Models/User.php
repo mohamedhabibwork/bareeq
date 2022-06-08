@@ -29,9 +29,9 @@ class User extends BaseAuth
         'lat',
         'lng',
         'city_id',
-        'otp_code',
+//        'otp_code',
+//        'phone_verified_at',
         'address',
-        'phone_verified_at',
     ];
 
     /**

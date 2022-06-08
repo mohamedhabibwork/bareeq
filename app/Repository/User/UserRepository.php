@@ -289,7 +289,7 @@ class UserRepository extends BaseRepository implements UserInterface
      */
     public function verifyOTPCode(User $user, string $code): bool
     {
-        return $user->otp_code == $code && $user->update(['otp_code' => null, 'phone_verified_at' => now()]);
+        return $user->otp_code == $code && $user->forceFill(['otp_code' => null, 'phone_verified_at' => now()])->save();
     }
 
     /**
@@ -299,7 +299,7 @@ class UserRepository extends BaseRepository implements UserInterface
      */
     public function resetPassword(User $user, string $password)
     {
-        return $user->update(compact('password') + ['otp_code' => null, 'phone_verified_at' => now()]);
+        return $user->forceFill(compact('password') + ['otp_code' => null, 'phone_verified_at' => now()])->save();
     }
 
     /**
